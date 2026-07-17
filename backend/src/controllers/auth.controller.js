@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 //import bcrypt from "bcrypt";
 
+
 export const register = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
@@ -65,7 +66,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log("Data recieved",email, password)
     // Validation
     if (!email || !password) {
       return res.status(400).json({
