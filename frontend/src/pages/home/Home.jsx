@@ -1,7 +1,12 @@
 import { useEffect } from "react";
-import { getCurrentUser } from "../services/auth.service";
-import { getToken } from "../utils/storage";
+import { getCurrentUser } from "../../services/auth.service";
+import { getToken } from "../../utils/storage";
 import { useNavigate } from "react-router-dom";
+import Hero from "./Hero";
+import Categories from "./Categories";
+import FeaturedRestaurants from "./FeaturedRestaurants";
+import Offers from "./Offers";
+import DownloadApp from "./DownloadApp";
 const Home = () => {
   const navigate = useNavigate();
 
@@ -31,7 +36,11 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Home Page</h1>
+      <Hero />
+      <Categories />
+      <FeaturedRestaurants />
+      <Offers />
+      <DownloadApp  />
     </div>
   );
 };

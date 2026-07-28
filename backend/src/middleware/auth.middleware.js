@@ -5,11 +5,11 @@ export const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Check Authorization Header
-    if (
-      req.cookies?.token || 
+    if (req.cookies?.token) {
+      token = req.cookies.token;
+    } else if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
+      req.headers.authorization.startsWith("Bearer ")
     ) {
       token = req.headers.authorization.split(" ")[1];
     }
@@ -53,4 +53,15 @@ export const protect = async (req, res, next) => {
       message: "Invalid or expired token.",
     });
   }
+};
+
+export const authorizeOwner = (req, res, next) => {
+  if (!req.user || req.user.role !== "owner") {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied. Owner privileges required.",
+    });
+  }
+
+  next();
 };

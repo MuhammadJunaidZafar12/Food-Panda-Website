@@ -68,7 +68,7 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <Logo />
+      <Logo variant="auth" size="lg" />
 
       <h2 className="mt-8 text-3xl font-bold text-gray-800">Welcome Back</h2>
 
