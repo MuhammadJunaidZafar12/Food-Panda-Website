@@ -1,10 +1,8 @@
-import {
-  Clock3,
-  Star,
-  Bike,
-} from "lucide-react";
+import { Clock3, Star, Bike } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const RestaurantCard = ({ restaurant }) => {
+const RestaurantCard = ({ restaurant, role = "customer" }) => {
+  const navigate = useNavigate();
   return (
     <div
       className="
@@ -23,7 +21,7 @@ const RestaurantCard = ({ restaurant }) => {
 
       <div className="relative h-56 overflow-hidden bg-gray-100">
         <img
-          src={restaurant.image}
+          src={restaurant.banner}
           alt={restaurant.name}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
         />
@@ -31,66 +29,80 @@ const RestaurantCard = ({ restaurant }) => {
         {/* Rating */}
 
         <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-white px-3 py-1 shadow">
-          <Star
-            size={16}
-            className="fill-yellow-400 text-yellow-400"
-          />
+          <Star size={16} className="fill-yellow-400 text-yellow-400" />
 
-          <span className="font-semibold">
-            {restaurant.rating}
-          </span>
+          <span className="font-semibold">{restaurant.rating}</span>
         </div>
       </div>
 
       {/* Content */}
 
       <div className="space-y-4 p-5">
-
         <div>
-          <h3 className="text-xl font-bold">
-            {restaurant.name}
-          </h3>
+          <h3 className="text-xl font-bold">{restaurant.name}</h3>
 
-          <p className="text-gray-500">
-            {restaurant.category}
-          </p>
+          <p className="text-gray-500">{restaurant.category}</p>
         </div>
 
         <div className="flex items-center justify-between text-sm text-gray-600">
-
           <div className="flex items-center gap-2">
             <Clock3 size={18} />
 
-            <span>
-              {restaurant.deliveryTime}
-            </span>
+            <span>{restaurant.deliveryTime}</span>
           </div>
 
           <div className="flex items-center gap-2">
             <Bike size={18} />
 
-            <span>
-              {restaurant.deliveryFee}
-            </span>
+            <span>{restaurant.deliveryFee}</span>
           </div>
-
         </div>
 
-        <button
-          className="
-            w-full
-            rounded-xl
-            bg-pink-600
-            py-3
-            font-semibold
-            text-white
-            transition
-            hover:bg-pink-700
-          "
-        >
-          View Restaurant
-        </button>
+         {/* Customer */}
 
+        {role === "customer" && (
+          <button
+            className="w-full rounded-xl bg-pink-600 py-3 font-semibold text-white hover:bg-pink-700"
+          >
+            View Restaurant
+          </button>
+        )}
+
+
+
+        {/* Admin */}
+
+        {role === "admin" && (
+          <div className="flex gap-2">
+            <button className="flex-1 rounded-xl bg-green-600 py-3 font-semibold text-white hover:bg-green-700">
+              Approve
+            </button>
+
+            <button className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white hover:bg-red-700">
+              Reject
+            </button>
+          </div>
+        )}
+
+
+        {/* Owner */}
+
+        {role === "owner" && (
+          <div className="flex gap-3">
+            <button
+              onClick={() =>
+                navigate(`/owner/restaurants/${restaurant._id}/edit`)
+              }
+              className="flex-1 rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700"
+            >
+              Edit
+            </button>
+
+            <button className="flex-1 rounded-xl bg-pink-600 py-3 font-semibold text-white hover:bg-pink-700">
+              View
+            </button>
+          </div>
+        ) }
       </div>
     </div>
   );

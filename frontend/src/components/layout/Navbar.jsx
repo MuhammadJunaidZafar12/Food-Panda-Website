@@ -103,7 +103,7 @@ const Navbar = () => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 rounded-full border border-gray-200 px-3 py-2 transition hover:bg-gray-50"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-pink-100">
+                <div className="flex h-9 w-12 items-center justify-center rounded-full bg-pink-100">
                   <User size={18} className="text-pink-600" />
                 </div>
 
@@ -152,6 +152,13 @@ const Navbar = () => {
                   >
                     My Orders
                   </Link>
+                  {user.role==="owner" && <Link
+                    to="/owner/dashboard"
+                    className="block px-5 py-3 transition hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Owner Dashboard
+                  </Link>}
                   <hr />
                   <button
                     onClick={handleLogout}

@@ -15,6 +15,11 @@ export const getCurrentUser = async () => {
   return data;
 };
 
+export const becomeOwnerUser = async () => {
+  const { data } = await api.patch("/auth/become-owner");
+  return data;
+};
+
 export const logoutUser = async () => {
   const { data } = await api.post("/auth/logout");
   return data;

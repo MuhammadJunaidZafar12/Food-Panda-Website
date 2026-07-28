@@ -124,6 +124,46 @@ export const login = async (req, res) => {
   }
 };
 
+export const becomeOwner = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (user.role === "owner") {
+      return res.status(200).json({
+        success: true,
+        message: "You are already an owner.",
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    }
+
+    user.role = "owner";
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Your account has been upgraded to owner.",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const getMe = async (req, res) => {
   res.status(200).json({
     success: true,

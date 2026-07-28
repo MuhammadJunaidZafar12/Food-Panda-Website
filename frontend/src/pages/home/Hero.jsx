@@ -1,6 +1,36 @@
-import { Search } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { becomeOwnerUser } from "../../services/auth.service";
+import { saveUser } from "../../utils/storage";
+import { setUser } from "../../redux/auth/authSlice";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
+  const handleClick = async () => {
+    if (!isAuthenticated || !user) {
+      navigate("/login");
+      return;
+    }
+
+    if (user.role === "owner") {
+      toast.success("You are already an owner.");
+      return;
+    }
+
+    try {
+      const response = await becomeOwnerUser();
+      saveUser(response.user);
+      dispatch(setUser(response.user));
+      toast.success(response.message || "Role updated successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Unable to update role");
+    }
+  };
+
   return (
     <section className="bg-gradient-to-r from-pink-50 to-white">
       <div className="mx-auto flex min-h-[500px] max-w-7xl flex-col items-center justify-between gap-12 px-6 py-16 lg:flex-row">
@@ -23,16 +53,10 @@ const Hero = () => {
           </p>
 
           {/* Search */}
-          <div className="mt-8 flex overflow-hidden rounded-xl border bg-white shadow-lg">
+          <div className="w-sm mt-8 flex overflow-hidden rounded-xl border bg-pink-600 shadow-lg">
 
-            <input
-              type="text"
-              placeholder="Search restaurants or food..."
-              className="flex-1 px-5 py-4 outline-none"
-            />
-
-            <button className="bg-pink-600 px-6 text-white transition hover:bg-pink-700">
-              <Search />
+            <button onClick={handleClick} className="px-6 text-white transition hover:bg-pink-700">
+              {user?.role === "owner" ? "You are an Owner" : "Become an Owner and list your restaurants"}
             </button>
 
           </div>
@@ -77,11 +101,9 @@ const Hero = () => {
         {/* Right */}
         <div className="flex justify-center">
 
-          <img
-            src="/hero-food.png"
-            alt="Food"
-            className="max-w-md drop-shadow-2xl"
-          />
+          <img src={`https://picsum.photos/400/300?random=${Date.now()}`} 
+                alt="Random" className="max-w-2xl drop-shadow-2xl" />
+            
 
         </div>
 
