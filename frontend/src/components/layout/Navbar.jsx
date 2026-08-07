@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
-import { Menu, X, Search, ShoppingCart, User, ChevronDown } from "lucide-react";
+import { Menu, X, ShoppingCart, User, ChevronDown } from "lucide-react";
 
 import Logo from "../ui/Logo";
 import { logout } from "../../redux/auth/authSlice";

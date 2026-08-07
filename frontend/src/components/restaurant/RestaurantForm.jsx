@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const getInitialState = () => ({
   name: "",
@@ -18,6 +18,13 @@ const getInitialState = () => ({
   banner: null,
 });
 
+const getFormData = (initialValues) => ({
+  ...getInitialState(),
+  ...(initialValues || {}),
+  latitude: initialValues?.location?.coordinates?.[1] ?? "",
+  longitude: initialValues?.location?.coordinates?.[0] ?? "",
+});
+
 const RestaurantForm = ({
   initialValues,
   onSubmit,
@@ -25,12 +32,7 @@ const RestaurantForm = ({
   mode = "create",
   submitLabel,
 }) => {
-  const [formData, setFormData] = useState(() => ({
-    ...getInitialState(),
-    ...(initialValues || {}),
-    latitude: initialValues?.location?.coordinates?.[1] ?? "",
-    longitude: initialValues?.location?.coordinates?.[0] ?? "",
-  }));
+  const [formData, setFormData] = useState(() => getFormData(initialValues));
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -78,19 +80,11 @@ const RestaurantForm = ({
     onSubmit(payload);
   };
 
-  useEffect(() => {
-    if (!initialValues) return;
-
-    setFormData({
-      ...getInitialState(),
-      ...initialValues,
-      latitude: initialValues.location?.coordinates?.[1] ?? "",
-      longitude: initialValues.location?.coordinates?.[0] ?? "",
-    });
-  }, [initialValues]);
+  const formKey = initialValues?._id || initialValues?.name || mode;
 
   return (
     <form
+      key={formKey}
       onSubmit={handleSubmit}
       className="space-y-6 rounded-2xl bg-white p-8 shadow"
     >

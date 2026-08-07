@@ -7,13 +7,10 @@ import { useDispatch } from "react-redux";
 
 import AuthLayout from "../../components/layout/AuthLayout";
 import Logo from "../../components/ui/Logo";
-import { registerUser } from "../../services/auth.service";
-import { saveToken, saveUser } from "../../utils/storage";
 import { registerThunk } from "../../redux/auth/authThunk";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({

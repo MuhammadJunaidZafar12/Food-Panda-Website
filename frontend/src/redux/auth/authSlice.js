@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loginThunk, registerThunk, getCurrentUserThunk } from "./authThunk";
-import { getToken, getUser, saveToken, saveUser, clearStorage } from "../../utils/storage";
-import { logoutUser } from "../../services/auth.service";
+import { getToken, getUser, clearStorage } from "../../utils/storage";
 
 const initialState = {
     user: getUser(),

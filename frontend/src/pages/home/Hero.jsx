@@ -7,6 +7,7 @@ import { setUser } from "../../redux/auth/authSlice";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const heroImage = "https://picsum.photos/400/300?random=1";
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
@@ -101,8 +102,7 @@ const Hero = () => {
         {/* Right */}
         <div className="flex justify-center">
 
-          <img src={`https://picsum.photos/400/300?random=${Date.now()}`} 
-                alt="Random" className="max-w-2xl drop-shadow-2xl" />
+          <img src={heroImage} alt="Random" className="max-w-2xl drop-shadow-2xl" />
             
 
         </div>

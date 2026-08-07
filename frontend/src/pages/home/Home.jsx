@@ -11,28 +11,23 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const fetchUser = async () => {
       try {
-
         if (!getToken()) {
           console.log("No token found. User is not authenticated.");
           navigate("/login");
+          return;
         }
+
         const response = await getCurrentUser();
-
         console.log(response);
-
       } catch (error) {
-
         console.log(error.response?.data);
-
       }
     };
 
     fetchUser();
-
-  }, []);
+  }, [navigate]);
 
   return (
     <div>

@@ -1,19 +1,13 @@
-import { useState, useEffect } from "react";
-import { Link, Router } from "react-router-dom";
-import { Route } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/layout/AuthLayout";
 import Logo from "../../components/ui/Logo";
 import Input from "../../components/ui/Input";
 import PasswordInput from "../../components/ui/PasswordInput";
 import Button from "../../components/ui/Button";
-import api from "../../api/axios";
-import { loginUser } from "../../services/auth.service";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { saveToken, saveUser } from "../../utils/storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginThunk } from "../../redux/auth/authThunk";
-import { useSelector } from "react-redux";
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
