@@ -10,8 +10,9 @@ import {
 } from "../controllers/restaurant.controller.js";
 import { protect, authorizeOwner } from "../middleware/auth.middleware.js";
 import upload from "../middleware/upload.middleware.js";
+import { Router } from "express";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", getRestaurants);
 router.get("/my-restaurants", protect, authorizeOwner, getMyRestaurants);
