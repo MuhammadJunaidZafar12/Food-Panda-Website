@@ -1,20 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+    approveRestaurantThunk,
     createRestaurantThunk,
     getMyRestaurantsThunk,
+    getPendingRestaurantsThunk,
     getRestaurantByIdThunk,
     getRestaurantsThunk,
     updateRestaurantThunk,
+    getAllApprovedRestaurantsThunk,
+    getAllRejectedRestaurantsThunk,
+    rejectRestaurantThunk,
+    getAdminDashboardStatsThunk,
 } from "./restaurantThunk";
 
 const initialState = {
     restaurants: [],
+    pendingRestaurants: [],
     restaurant: null,
-    currentRestaurant: null,
+    ApprovedRestaurant: null,
+    RejectedRestaurant: null,
+    allApprovedRestaurants: [],
+    allRejectedRestaurants: [],
+    adminDashboard: {
+        stats: {
+            pendingRestaurants: 0,
+            approvedRestaurants: 0,
+            rejectedRestaurants: 0,
+            totalOwners: 0,
+        },
 
+        restaurantGraph: [],
+        userGraph: [],
+    },
+    currentRestaurant: null,
     loading: false,
     error: null,
-
     success: false,
 };
 
@@ -139,8 +159,158 @@ const restaurantSlice = createSlice({
                     state.loading = false;
                     state.error = action.payload;
                 }
-            );
+            )
+            .addCase(
+                getPendingRestaurantsThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addCase(
+                getPendingRestaurantsThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
 
+                    state.pendingRestaurants =
+                        action.payload.restaurants;
+                }
+            )
+            .addCase(
+                getPendingRestaurantsThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                }
+            )
+
+            .addCase(
+                approveRestaurantThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addCase(
+                approveRestaurantThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
+                    state.ApprovedRestaurant = action.payload.restaurant;
+                    // Remove the approved restaurant from pendingRestaurants
+                    state.pendingRestaurants = state.pendingRestaurants.filter(
+                        (r) => r._id !== action.payload.restaurant._id
+                    );
+                }
+            )
+            .addCase(
+                approveRestaurantThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                }
+            )
+            .addCase(
+                getAllApprovedRestaurantsThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addCase(
+                getAllApprovedRestaurantsThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
+                    state.allApprovedRestaurants = action.payload.restaurants;
+                }
+            )
+            .addCase(
+                getAllApprovedRestaurantsThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                }
+            )
+            .addCase(
+                rejectRestaurantThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addCase(
+                rejectRestaurantThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
+                    state.RejectedRestaurant = action.payload.restaurant;
+                    // Remove the rejected restaurant from pendingRestaurants
+                    state.pendingRestaurants = state.pendingRestaurants.filter(
+                        (r) => r._id !== action.payload.restaurant._id
+                    );
+                }
+            )
+            .addCase(
+                rejectRestaurantThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                }
+            )
+            .addCase(
+                getAllRejectedRestaurantsThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addCase(
+                getAllRejectedRestaurantsThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
+                    state.allRejectedRestaurants = action.payload.restaurants;
+                }
+            )
+            .addCase(
+                getAllRejectedRestaurantsThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                }
+            )
+            .addCase(
+                getAdminDashboardStatsThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+
+            .addCase(
+                getAdminDashboardStatsThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
+
+                    state.adminDashboard = {
+                        stats: action.payload.stats,
+
+                        restaurantGraph:
+                            action.payload.restaurantGraph,
+
+                        userGraph:
+                            action.payload.userGraph,
+                    };
+                }
+            )
+
+            .addCase(
+                getAdminDashboardStatsThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+
+                    state.error =
+                        action.payload ||
+                        "Failed to load dashboard";
+                }
+            )
     },
 });
 

@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginThunk, registerThunk, getCurrentUserThunk } from "./authThunk";
+import {
+    loginThunk,
+    registerThunk,
+    getCurrentUserThunk,
+    getAllUsersThunk,
+    updateUserRoleThunk,
+    deleteUserThunk,
+} from "./authThunk";
 import { getToken, getUser, clearStorage } from "../../utils/storage";
 
 const initialState = {
@@ -9,6 +16,9 @@ const initialState = {
     loading: false,
     isCheckingAuth: true,    // App startup authentication check
     error: null,
+    users: [],
+    usersLoading: false,
+    usersError: null,
 };
 
 const authSlice = createSlice({
@@ -74,6 +84,46 @@ const authSlice = createSlice({
                 state.token = null;
                 state.isAuthenticated = false;
                 clearStorage();
+            })
+            .addCase(getAllUsersThunk.pending, (state) => {
+                state.usersLoading = true;
+                state.usersError = null;
+            })
+            .addCase(getAllUsersThunk.fulfilled, (state, action) => {
+                state.usersLoading = false;
+                state.users = action.payload.users;
+            })
+            .addCase(getAllUsersThunk.rejected, (state, action) => {
+                state.usersLoading = false;
+                state.usersError = action.payload;
+            })
+            .addCase(updateUserRoleThunk.pending, (state) => {
+                state.usersLoading = true;
+                state.usersError = null;
+            })
+            .addCase(updateUserRoleThunk.fulfilled, (state, action) => {
+                state.usersLoading = false;
+                const updatedUser = action.payload.user;
+                state.users = state.users.map((u) =>
+                    u._id === updatedUser._id ? updatedUser : u
+                );
+            })
+            .addCase(updateUserRoleThunk.rejected, (state, action) => {
+                state.usersLoading = false;
+                state.usersError = action.payload;
+            })
+            .addCase(deleteUserThunk.pending, (state) => {
+                state.usersLoading = true;
+                state.usersError = null;
+            })
+            .addCase(deleteUserThunk.fulfilled, (state, action) => {
+                state.usersLoading = false;
+                const { userId } = action.payload;
+                state.users = state.users.filter((u) => u._id !== userId);
+            })
+            .addCase(deleteUserThunk.rejected, (state, action) => {
+                state.usersLoading = false;
+                state.usersError = action.payload;
             });
 
     }

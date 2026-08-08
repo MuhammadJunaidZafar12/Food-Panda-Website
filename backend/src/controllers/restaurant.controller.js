@@ -6,6 +6,12 @@ import {
   deleteRestaurantService,
   getOwnerRestaurants,
   getRestaurantByIdService,
+  getPendingRestaurantsService,
+  approveRestaurantService,
+  rejectRestaurantService,
+  getAllApprovedRestaurantsService,
+  getAllRejectedRestaurantsService,
+  getAdminDashboardStatsService,
 } from "../services/restaurant.service.js";
 
 export const getRestaurants = async (
@@ -141,6 +147,14 @@ export const updateRestaurant = async (
       ...req.body,
     };
 
+    // Remove logo and banner from req.body ONLY if they are not strings (prevents invalid array/object types)
+    // if (restaurantData.logo && typeof restaurantData.logo !== "string") {
+    //   delete restaurantData.logo;
+    // }
+    // if (restaurantData.banner && typeof restaurantData.banner !== "string") {
+    //   delete restaurantData.banner;
+    // }
+
     if (req.body.location) {
       restaurantData.location =
         typeof req.body.location === "string"
@@ -185,6 +199,117 @@ export const deleteRestaurant = async (
     res.status(200).json({
       success: true,
       message: "Restaurant deleted successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin Controllers
+export const getPendingRestaurants =
+  async (req, res, next) => {
+    try {
+      const restaurants =
+        await getPendingRestaurantsService();
+
+      res.status(200).json({
+        success: true,
+        restaurants,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+// Admin Controller to approve a restaurant
+export const approveRestaurant = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const restaurant =
+      await approveRestaurantService(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Restaurant approved successfully.",
+      restaurant,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//Admin Controller to reject a restaurant
+export const rejectRestaurant = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const restaurant =
+      await rejectRestaurantService(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Restaurant rejected successfully.",
+      restaurant,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//Admin Controller to get all approved restaurants
+export const getAllApprovedRestaurants = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const restaurants = await getAllApprovedRestaurantsService();
+
+    res.status(200).json({
+      success: true,
+      restaurants,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//Admin Controller to get all rejected restaurants
+export const getAllRejectedRestaurants = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const restaurants = await getAllRejectedRestaurantsService();
+
+    res.status(200).json({
+      success: true,
+      restaurants,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//
+export const getAdminDashboardStats = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const data =
+      await getAdminDashboardStatsService();
+
+    res.status(200).json({
+      success: true,
+      ...data,
     });
   } catch (error) {
     next(error);

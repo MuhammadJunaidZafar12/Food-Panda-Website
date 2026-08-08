@@ -1,8 +1,19 @@
 import { Clock3, Star, Bike } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { approveRestaurantThunk, rejectRestaurantThunk } from "../../redux/restaurant/restaurantThunk";
+import { useSelector, useDispatch } from "react-redux";
 
 const RestaurantCard = ({ restaurant, role = "customer" }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleApprove = () => {
+    // Implement the logic to approve the restaurant
+    dispatch(approveRestaurantThunk(restaurant._id));
+  }
+  const handleReject = () => {
+    // Implement the logic to reject the restaurant
+    dispatch(rejectRestaurantThunk(restaurant._id));
+  }
   return (
     <div
       className="
@@ -13,7 +24,6 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
         shadow-sm
         transition-all
         duration-300
-        hover:-translate-y-2
         hover:shadow-xl
       "
     >
@@ -58,7 +68,7 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
           </div>
         </div>
 
-         {/* Customer */}
+        {/* Customer */}
 
         {role === "customer" && (
           <button
@@ -74,12 +84,16 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
 
         {role === "admin" && (
           <div className="flex gap-2">
-            <button className="flex-1 rounded-xl bg-green-600 py-3 font-semibold text-white hover:bg-green-700">
+            <button onClick={handleApprove} className="flex-1 rounded-xl bg-green-600 py-3 font-semibold text-white hover:bg-green-700">
               Approve
             </button>
 
-            <button className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white hover:bg-red-700">
+            <button onClick={handleReject} className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white hover:bg-red-700">
               Reject
+            </button>
+
+            <button className="flex-1 rounded-xl bg-pink-600 py-3 font-semibold text-white hover:bg-pink-700">
+              View
             </button>
           </div>
         )}
@@ -102,7 +116,7 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
               View
             </button>
           </div>
-        ) }
+        )}
       </div>
     </div>
   );
