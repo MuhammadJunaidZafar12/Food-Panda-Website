@@ -20,6 +20,9 @@ import PendingRestaurants from "../pages/admin/PendingRestaurants";
 import ApprovedRestaurants from "../pages/admin/ApprovedRestaurants";
 import RejectedRestaurants from "../pages/admin/RejectedRestaurants";
 import ManageUsers from "../pages/admin/Users";
+import OwnerProducts from "../pages/owner/OwnerProducts";
+import RestaurantDetails from "../pages/restaurant/RestaurantDetails";
+
 
 const AppRoutes = () => {
   return (
@@ -60,6 +63,15 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        
+        <Route
+          path="/restaurants/:id"
+          element={
+            <ProtectedRoute>
+              <RestaurantDetails />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/owner"
@@ -75,10 +87,9 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="restaurants" element={<OwnerRestaurants />} />
           <Route path="restaurants/create" element={<CreateRestaurant />} />
-          <Route
-            path="restaurants/:id/edit"
-            element={<EditRestaurant />}
-          />
+          <Route path="restaurants/:id/edit" element={<EditRestaurant />} />
+          <Route path="products" element={<OwnerProducts />} />
+          
         </Route>
 
         <Route
@@ -95,7 +106,10 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="pending-restaurants" element={<PendingRestaurants />} />
           <Route path="restaurants" element={<ApprovedRestaurants />} />
-          <Route path="rejected-restaurants" element={<RejectedRestaurants />} />
+          <Route
+            path="rejected-restaurants"
+            element={<RejectedRestaurants />}
+          />
           <Route path="users" element={<ManageUsers />} />
         </Route>
       </Routes>

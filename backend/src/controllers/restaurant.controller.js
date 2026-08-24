@@ -12,7 +12,26 @@ import {
   getAllApprovedRestaurantsService,
   getAllRejectedRestaurantsService,
   getAdminDashboardStatsService,
+  getPublicRestaurantByIdService,
 } from "../services/restaurant.service.js";
+import { deleteImageFromCloudinary } from "../utils/cloudinaryHelper.js";
+
+export const getPublicRestaurantById = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const restaurant = await getPublicRestaurantByIdService(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      restaurant,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getRestaurants = async (
   req,
@@ -194,7 +213,14 @@ export const deleteRestaurant = async (
   next
 ) => {
   try {
-    await deleteRestaurantService(req.params.id);
+    const restaurant = await deleteRestaurantService(req.params.id);
+
+    if (restaurant.logo) {
+      await deleteImageFromCloudinary(restaurant.logo);
+    }
+    if (restaurant.banner) {
+      await deleteImageFromCloudinary(restaurant.banner);
+    }
 
     res.status(200).json({
       success: true,

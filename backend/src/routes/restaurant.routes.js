@@ -11,6 +11,7 @@ import {
   getAllApprovedRestaurants,
   getAllRejectedRestaurants,
   getAdminDashboardStats,
+  getPublicRestaurantById,
 } from "../controllers/restaurant.controller.js";
 import { protect, authorizeOwner, authorize } from "../middleware/auth.middleware.js";
 import upload from "../middleware/upload.middleware.js";
@@ -61,6 +62,7 @@ router.get(
 );
 
 router.get("/", getRestaurants);
+router.get("/public/:id", getPublicRestaurantById);
 router.get("/my-restaurants", protect, authorizeOwner, getMyRestaurants);
 
 router.get("/:id", protect, getRestaurantById);

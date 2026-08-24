@@ -60,6 +60,20 @@ export const getRestaurant = async (id) => {
   return restaurant;
 };
 
+export const getPublicRestaurantByIdService = async (id) => {
+  const restaurant = await Restaurant.findOne({
+    _id: id,
+    status: "approved",
+    isActive: true,
+  });
+
+  if (!restaurant) {
+    throw new Error("Restaurant not found or not approved.");
+  }
+
+  return restaurant;
+};
+
 // **************************************
 export const createRestaurantService = async (
   restaurantData,

@@ -1,4 +1,4 @@
-import { UserCog, Mail, Phone, Shield, ShieldAlert, Trash2, ShieldOff, User } from "lucide-react";
+import { UserCog, Mail, Phone, Shield, Trash2, ShieldOff, User } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsersThunk, updateUserRoleThunk, deleteUserThunk } from "../../redux/auth/authThunk";

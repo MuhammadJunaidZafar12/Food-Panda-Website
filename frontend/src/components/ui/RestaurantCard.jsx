@@ -1,7 +1,7 @@
 import { Clock3, Star, Bike } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { approveRestaurantThunk, rejectRestaurantThunk } from "../../redux/restaurant/restaurantThunk";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const RestaurantCard = ({ restaurant, role = "customer" }) => {
   const navigate = useNavigate();
@@ -72,6 +72,7 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
 
         {role === "customer" && (
           <button
+            onClick={() => navigate(`/restaurants/${restaurant._id}`)}
             className="w-full rounded-xl bg-pink-600 py-3 font-semibold text-white hover:bg-pink-700"
           >
             View Restaurant

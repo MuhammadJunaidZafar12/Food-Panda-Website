@@ -11,6 +11,7 @@ import {
   getAllApprovedRestaurants,
   getRejectedRestaurants,
   getAdminDashboardStats,
+  getPublicRestaurantById,
 } from "../../services/restaurant.service";
 
 export const getRestaurantsThunk = createAsyncThunk(
@@ -58,6 +59,19 @@ export const getRestaurantByIdThunk = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message
+      );
+    }
+  }
+);
+
+export const getPublicRestaurantByIdThunk = createAsyncThunk(
+  "restaurant/getPublicById",
+  async (id, thunkAPI) => {
+    try {
+      return await getPublicRestaurantById(id);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch restaurant"
       );
     }
   }

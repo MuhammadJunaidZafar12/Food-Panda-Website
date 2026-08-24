@@ -11,6 +11,7 @@ import {
     getAllRejectedRestaurantsThunk,
     rejectRestaurantThunk,
     getAdminDashboardStatsThunk,
+    getPublicRestaurantByIdThunk,
 } from "./restaurantThunk";
 
 const initialState = {
@@ -130,6 +131,31 @@ const restaurantSlice = createSlice({
             )
             .addCase(
                 getRestaurantByIdThunk.rejected,
+                (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                    state.currentRestaurant = null;
+                }
+            )
+            .addCase(
+                getPublicRestaurantByIdThunk.pending,
+                (state) => {
+                    state.loading = true;
+                    state.success = false;
+                    state.error = null;
+                    state.currentRestaurant = null;
+                }
+            )
+            .addCase(
+                getPublicRestaurantByIdThunk.fulfilled,
+                (state, action) => {
+                    state.loading = false;
+                    state.currentRestaurant =
+                        action.payload.restaurant;
+                }
+            )
+            .addCase(
+                getPublicRestaurantByIdThunk.rejected,
                 (state, action) => {
                     state.loading = false;
                     state.error = action.payload;

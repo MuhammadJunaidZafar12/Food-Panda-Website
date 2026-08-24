@@ -23,6 +23,11 @@ export const getRestaurantById = async (id) => {
   return data;
 };
 
+export const getPublicRestaurantById = async (id) => {
+  const { data } = await api.get(`/restaurants/public/${id}`);
+  return data;
+};
+
 export const updateRestaurant = async (id, formData) => {
   const { data } = await api.put(
     `/restaurants/${id}`,

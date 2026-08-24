@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import restaurantRoutes from "./routes/restaurant.routes.js"
+import productRoutes from "./routes/product.routes.js";
 const app = express();
 
 // Middlewares
@@ -19,7 +20,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);
-
+app.use("/api/products", productRoutes);
 // Test Route
 app.get("/", (req, res) => {
   res.json({
