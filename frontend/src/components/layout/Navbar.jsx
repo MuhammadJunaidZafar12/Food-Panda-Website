@@ -152,13 +152,24 @@ const Navbar = () => {
                   >
                     My Orders
                   </Link>
-                  {user.role==="owner" && <Link
-                    to="/owner/dashboard"
-                    className="block px-5 py-3 transition hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Owner Dashboard
-                  </Link>}
+                  {user?.role === "owner" && (
+                    <Link
+                      to="/owner/dashboard"
+                      className="block px-5 py-3 transition hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Owner Dashboard
+                    </Link>
+                  )}
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="block px-5 py-3 transition hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <hr />
                   <button
                     onClick={handleLogout}
@@ -239,6 +250,16 @@ const Navbar = () => {
                 >
                   Orders
                 </Link>
+
+                {user?.role === "admin" && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
 
                 <button
                   onClick={handleLogout}

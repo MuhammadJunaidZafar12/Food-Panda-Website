@@ -1,7 +1,19 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import RestaurantCard from "../../components/ui/RestaurantCard";
-import { featuredRestaurants } from "../../data/homeData";
+import { getRestaurantsThunk } from "../../redux/restaurant/restaurantThunk";
 
 const FeaturedRestaurants = () => {
+  const dispatch = useDispatch();
+  const { restaurants, loading } = useSelector((state) => state.restaurant);
+
+  useEffect(() => {
+    dispatch(getRestaurantsThunk({}));
+  }, [dispatch]);
+
+  // Optionally limit the number of restaurants shown on the home page
+  const featured = restaurants.slice(0, 4);
+
   return (
     <section className="bg-gray-50 py-16">
       <div className="mx-auto max-w-7xl px-6">
@@ -16,16 +28,22 @@ const FeaturedRestaurants = () => {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+        {loading ? (
+          <div className="flex h-32 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-pink-500 border-t-transparent"></div>
+          </div>
+        ) : (
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
 
-          {featuredRestaurants.map((restaurant) => (
-            <RestaurantCard
-              key={restaurant.id}
-              restaurant={restaurant}
-            />
-          ))}
+            {featured.map((restaurant) => (
+              <RestaurantCard
+                key={restaurant._id}
+                restaurant={restaurant}
+              />
+            ))}
 
-        </div>
+          </div>
+        )}
 
       </div>
     </section>
