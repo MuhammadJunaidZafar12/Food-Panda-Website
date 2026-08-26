@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import restaurantRoutes from "./routes/restaurant.routes.js"
 import productRoutes from "./routes/product.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 const app = express();
 
 // Middlewares
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 // Test Route
 app.get("/", (req, res) => {
   res.json({
