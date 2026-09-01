@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
     },
 
     phone: {
-      type: String, 
+      type: String,
       default: "",
     },
 
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["customer", "owner", "admin"],
+      enum: ["customer", "owner", "admin", "rider"],
       default: "customer",
     },
 
@@ -54,6 +54,41 @@ const userSchema = new mongoose.Schema(
     isBlocked: {
       type: Boolean,
       default: false,
+    },
+
+    // ── Rider fields (only meaningful when role === "rider") ────────
+    // A rider must be available to receive new delivery assignments.
+    isAvailable: {
+      type: Boolean,
+      default: false,
+    },
+
+    vehicleType: {
+      type: String,
+      enum: ["bike", "scooter", "bicycle", "car"],
+      default: "bike",
+    },
+
+    vehicleNumber: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    // Last known GPS position, pushed by the rider's device.
+    currentLocation: {
+      latitude: {
+        type: Number,
+        default: null,
+      },
+      longitude: {
+        type: Number,
+        default: null,
+      },
+      updatedAt: {
+        type: Date,
+        default: null,
+      },
     },
   },
   {

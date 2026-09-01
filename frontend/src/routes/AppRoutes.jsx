@@ -22,6 +22,19 @@ import RejectedRestaurants from "../pages/admin/RejectedRestaurants";
 import ManageUsers from "../pages/admin/Users";
 import OwnerProducts from "../pages/owner/OwnerProducts";
 import RestaurantDetails from "../pages/restaurant/RestaurantDetails";
+import Checkout from "../pages/order/CheckoutPage";
+import MyOrders from "../pages/order/MyOrdersPage";
+import OrderDetails from "../pages/order/OrderDetailsPage";
+import OrderConfirmation from "../pages/order/OrderConfirmationPage";
+import OrderTracking from "../pages/order/OrderTrackingPage";
+import OwnerOrders from "../pages/owner/OwnerOrders";
+import AdminOrders from "../pages/admin/AdminOrders";
+import AdminRiders from "../pages/admin/AdminRiders";
+import RiderProtected from "./RiderProtected";
+import RiderLayout from "../components/layout/RiderLayout";
+import RiderDashboard from "../pages/rider/RiderDashboard";
+import RiderOrders from "../pages/rider/RiderOrders";
+import RiderOrderDetails from "../pages/rider/RiderOrderDetails";
 
 
 const AppRoutes = () => {
@@ -36,6 +49,11 @@ const AppRoutes = () => {
           }
         >
           <Route path="/" element={<Home />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/orders/:id" element={<OrderDetails />} />
+          <Route path="/orders/:id/confirmation" element={<OrderConfirmation />} />
+          <Route path="/orders/:id/track" element={<OrderTracking />} />
         </Route>
 
         <Route
@@ -63,7 +81,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/restaurants/:id"
           element={
@@ -89,7 +107,8 @@ const AppRoutes = () => {
           <Route path="restaurants/create" element={<CreateRestaurant />} />
           <Route path="restaurants/:id/edit" element={<EditRestaurant />} />
           <Route path="products" element={<OwnerProducts />} />
-          
+          <Route path="orders" element={<OwnerOrders />} />
+
         </Route>
 
         <Route
@@ -111,6 +130,25 @@ const AppRoutes = () => {
             element={<RejectedRestaurants />}
           />
           <Route path="users" element={<ManageUsers />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="riders" element={<AdminRiders />} />
+        </Route>
+
+        {/* Rider dashboard */}
+        <Route
+          path="/rider"
+          element={
+            <ProtectedRoute>
+              <RiderProtected>
+                <RiderLayout />
+              </RiderProtected>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<RiderDashboard />} />
+          <Route path="dashboard" element={<RiderDashboard />} />
+          <Route path="deliveries" element={<RiderOrders />} />
+          <Route path="deliveries/:id" element={<RiderOrderDetails />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -166,7 +166,7 @@ const Navbar = () => {
                       My Profile
                     </Link>
                     <Link
-                      to="/orders"
+                      to="/my-orders"
                       className="block px-5 py-3 transition hover:bg-gray-100"
                       onClick={() => setIsDropdownOpen(false)}
                     >
@@ -188,6 +188,15 @@ const Navbar = () => {
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         Admin Dashboard
+                      </Link>
+                    )}
+                    {user?.role === "rider" && (
+                      <Link
+                        to="/rider/dashboard"
+                        className="block px-5 py-3 transition hover:bg-gray-100"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Rider Dashboard
                       </Link>
                     )}
                     <hr />
@@ -277,7 +286,7 @@ const Navbar = () => {
                   </Link>
 
                   <Link
-                    to="/orders"
+                    to="/my-orders"
                     className="py-2"
                     onClick={() => setIsOpen(false)}
                   >
@@ -291,6 +300,16 @@ const Navbar = () => {
                       onClick={() => setIsOpen(false)}
                     >
                       Admin Dashboard
+                    </Link>
+                  )}
+
+                  {user?.role === "rider" && (
+                    <Link
+                      to="/rider/dashboard"
+                      className="py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Rider Dashboard
                     </Link>
                   )}
 

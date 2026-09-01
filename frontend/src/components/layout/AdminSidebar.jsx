@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Building2, CheckCircle2, XCircle, Users } from "lucide-react";
+import { LayoutDashboard, Building2, CheckCircle2, XCircle, Users, ShoppingBag, Bike } from "lucide-react";
 
 const navItems = [
   { to: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -7,6 +7,8 @@ const navItems = [
   { to: "/admin/restaurants", label: "Approved Restaurants", icon: CheckCircle2 },
   { to: "/admin/rejected-restaurants", label: "Rejected Restaurants", icon: XCircle },
   { to: "/admin/users", label: "Manage Users", icon: Users },
+  { to: "/admin/orders", label: "Manage Orders", icon: ShoppingBag },
+  { to: "/admin/riders", label: "Manage Riders", icon: Bike },
 ];
 
 const AdminSidebar = () => {

@@ -4,6 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllUsersThunk, updateUserRoleThunk, deleteUserThunk } from "../../redux/auth/authThunk";
 import toast from "react-hot-toast";
 
+// Every role the platform supports. "rider" unlocks the rider dashboard and
+// makes the user assignable to deliveries.
+const ROLES = ["customer", "rider", "owner", "admin"];
+
+// Same colours as before for the original three roles, plus one for riders.
+const roleTones = {
+  admin: { icon: "bg-red-100 text-red-600", badge: "bg-red-100 text-red-800" },
+  owner: { icon: "bg-green-100 text-green-600", badge: "bg-green-100 text-green-800" },
+  rider: { icon: "bg-amber-100 text-amber-600", badge: "bg-amber-100 text-amber-800" },
+  customer: { icon: "bg-blue-100 text-blue-600", badge: "bg-gray-100 text-gray-800" },
+};
+
 const Users = () => {
   const dispatch = useDispatch();
   const { users, usersLoading, usersError, user: currentUser } = useSelector((state) => state.auth);
@@ -21,7 +33,7 @@ const Users = () => {
 
     const newRole = user.role === "admin" ? "customer" : "admin";
     const actionText = newRole === "admin" ? "promote to Admin" : "remove Admin privileges from";
-    
+
     if (window.confirm(`Are you sure you want to ${actionText} ${user.name}?`)) {
       try {
         const result = await dispatch(updateUserRoleThunk({ userId: user._id, role: newRole })).unwrap();
@@ -29,6 +41,27 @@ const Users = () => {
       } catch (err) {
         toast.error(err || "Failed to update user role.");
       }
+    }
+  };
+
+  const handleRoleChange = async (user, role) => {
+    if (role === user.role) return;
+
+    const isSelf = currentUser?._id === user._id || currentUser?.id === user._id;
+    if (isSelf) {
+      toast.error("You cannot change your own role.");
+      return;
+    }
+
+    if (!window.confirm(`Change ${user.name}'s role to ${role}?`)) return;
+
+    try {
+      const result = await dispatch(
+        updateUserRoleThunk({ userId: user._id, role })
+      ).unwrap();
+      toast.success(result.message || "User role updated successfully.");
+    } catch (err) {
+      toast.error(err || "Failed to update user role.");
     }
   };
 
@@ -76,6 +109,7 @@ const Users = () => {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {users.map((user) => {
             const isSelf = currentUser?._id === user._id || currentUser?.id === user._id;
+            const tone = roleTones[user.role] || roleTones.customer;
             return (
               <div key={user._id} className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md">
                 {isSelf && (
@@ -83,27 +117,15 @@ const Users = () => {
                     You
                   </span>
                 )}
-                
+
                 <div>
                   <div className="flex items-center gap-3.5">
-                    <div className={`rounded-xl p-2.5 ${
-                      user.role === "admin" 
-                        ? "bg-red-100 text-red-600" 
-                        : user.role === "owner" 
-                        ? "bg-green-100 text-green-600" 
-                        : "bg-blue-100 text-blue-600"
-                    }`}>
+                    <div className={`rounded-xl p-2.5 ${tone.icon}`}>
                       <UserCog size={22} />
                     </div>
                     <div>
                       <h2 className="text-lg font-bold text-gray-900 leading-tight">{user.name}</h2>
-                      <span className={`inline-block mt-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${
-                        user.role === "admin"
-                          ? "bg-red-100 text-red-800"
-                          : user.role === "owner"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}>
+                      <span className={`inline-block mt-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${tone.badge}`}>
                         {user.role}
                       </span>
                     </div>
@@ -123,7 +145,32 @@ const Users = () => {
                   </div>
                 </div>
 
-                <div className="mt-8 flex gap-3 border-t border-gray-100 pt-4">
+                {/* Full role picker — the Make/Remove Admin shortcut below only
+                    toggles between customer and admin, so this is how a user
+                    becomes a rider or a restaurant owner. */}
+                <div className="mt-6 border-t border-gray-100 pt-4">
+                  <label
+                    htmlFor={`role-${user._id}`}
+                    className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500"
+                  >
+                    Platform Role
+                  </label>
+                  <select
+                    id={`role-${user._id}`}
+                    value={user.role}
+                    disabled={isSelf}
+                    onChange={(e) => handleRoleChange(user, e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium capitalize text-gray-800 transition focus:border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-100 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+                  >
+                    {ROLES.map((role) => (
+                      <option key={role} value={role} className="capitalize">
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mt-4 flex gap-3">
                   {user.role === "admin" ? (
                     <button
                       onClick={() => handleToggleAdmin(user)}
