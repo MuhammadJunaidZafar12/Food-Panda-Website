@@ -1,4 +1,5 @@
 import Product from "../models/product.model.js";
+import Restaurant from "../models/restaurant.model.js";
 
 // Create Product
 export const createProductService = async (productData) => {
@@ -7,7 +8,25 @@ export const createProductService = async (productData) => {
   return product;
 };
 
-// Get All Products
+// Get My (Owner's) Products
+export const getMyProductsService = async (ownerId) => {
+  const restaurants = await Restaurant.find({ owner: ownerId }).select("_id");
+  const restaurantIds = restaurants.map((r) => r._id);
+
+  if (restaurantIds.length === 0) {
+    return [];
+  }
+
+  const products = await Product.find({
+    restaurant: { $in: restaurantIds },
+  })
+    .populate("restaurant", "name slug logo status")
+    .sort({ createdAt: -1 });
+
+  return products;
+};
+
+// Get All Products (Public / Filtered)
 export const getAllProductsService = async (restaurantId) => {
   const filter = {};
 

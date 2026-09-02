@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Plus, Pencil, Trash2, Store } from "lucide-react";
 import toast from "react-hot-toast";
 
 import {
@@ -15,7 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ProductForm from "../../components/product/ProductForm";
 
 import {
-  getProductsThunk,
+  getMyProductsThunk,
   createProductThunk,
   getProductByIdThunk,
   updateProductThunk,
@@ -26,6 +27,7 @@ import { getMyRestaurantsThunk } from "../../redux/restaurant/restaurantThunk";
 
 const OwnerProducts = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     products = [],
@@ -54,7 +56,7 @@ const OwnerProducts = () => {
   */
 
   useEffect(() => {
-    dispatch(getProductsThunk());
+    dispatch(getMyProductsThunk());
     dispatch(getMyRestaurantsThunk());
   }, [dispatch]);
 
@@ -76,7 +78,7 @@ const OwnerProducts = () => {
 
       setOpenCreate(false);
 
-      dispatch(getProductsThunk());
+      dispatch(getMyProductsThunk());
     } else {
       toast.error(
         result.payload ||
@@ -141,7 +143,7 @@ const OwnerProducts = () => {
 
       setSelectedProduct(null);
 
-      dispatch(getProductsThunk());
+      dispatch(getMyProductsThunk());
     } else {
       toast.error(
         result.payload ||
@@ -176,7 +178,7 @@ const OwnerProducts = () => {
         "Product deleted successfully."
       );
 
-      dispatch(getProductsThunk());
+      dispatch(getMyProductsThunk());
     } else {
       toast.error(
         result.payload ||
@@ -233,6 +235,15 @@ const OwnerProducts = () => {
     {}
   );
 
+  const handleAddProductClick = () => {
+    if (restaurants.length === 0) {
+      toast.error("Please create a restaurant first before adding products.");
+      navigate("/owner/restaurants/create");
+      return;
+    }
+    setOpenCreate(true);
+  };
+
   /*
   |--------------------------------------------------------------------------
   | Render
@@ -262,9 +273,7 @@ const OwnerProducts = () => {
           </div>
 
           <button
-            onClick={() =>
-              setOpenCreate(true)
-            }
+            onClick={handleAddProductClick}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-3 font-semibold text-white transition hover:bg-pink-700 sm:w-auto"
           >
             <Plus size={20} />
@@ -301,10 +310,46 @@ const OwnerProducts = () => {
         )}
 
         {/* ============================================================
-            EMPTY
+            EMPTY: NO RESTAURANT YET
         ============================================================ */}
 
         {!loading &&
+          restaurants.length === 0 &&
+          !error && (
+            <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
+
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-pink-100">
+                <Store
+                  size={30}
+                  className="text-pink-600"
+                />
+              </div>
+
+              <h2 className="text-xl font-bold text-gray-800">
+                No Restaurant Found
+              </h2>
+
+              <p className="mt-2 text-gray-500 max-w-md mx-auto">
+                You need to create a restaurant before you can add and manage products.
+              </p>
+
+              <Link
+                to="/owner/restaurants/create"
+                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-pink-600 px-5 py-3 font-semibold text-white transition hover:bg-pink-700"
+              >
+                <Plus size={18} />
+                Create Your First Restaurant
+              </Link>
+
+            </div>
+          )}
+
+        {/* ============================================================
+            EMPTY: RESTAURANT EXISTS BUT NO PRODUCTS YET
+        ============================================================ */}
+
+        {!loading &&
+          restaurants.length > 0 &&
           products.length === 0 &&
           !error && (
             <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
@@ -321,8 +366,7 @@ const OwnerProducts = () => {
               </h2>
 
               <p className="mt-2 text-gray-500">
-                Start adding products to your
-                restaurant.
+                Start adding products to your restaurant menu.
               </p>
 
               <button

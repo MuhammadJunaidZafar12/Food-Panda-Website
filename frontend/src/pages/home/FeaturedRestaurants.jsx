@@ -2,14 +2,22 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RestaurantCard from "../../components/ui/RestaurantCard";
 import { getRestaurantsThunk } from "../../redux/restaurant/restaurantThunk";
+import useUserLocation from "../../hooks/useUserLocation";
 
 const FeaturedRestaurants = () => {
   const dispatch = useDispatch();
   const { restaurants, loading } = useSelector((state) => state.restaurant);
+  const { latitude, longitude, hasCoordinates } = useUserLocation();
 
   useEffect(() => {
-    dispatch(getRestaurantsThunk({}));
-  }, [dispatch]);
+    const params = {};
+    if (hasCoordinates) {
+      params.latitude = latitude;
+      params.longitude = longitude;
+      params.radius = 15; // wide featured radius
+    }
+    dispatch(getRestaurantsThunk(params));
+  }, [dispatch, latitude, longitude, hasCoordinates]);
 
   // Optionally limit the number of restaurants shown on the home page
   const featured = restaurants.slice(0, 4);

@@ -1,6 +1,15 @@
 import { Link } from "react-router-dom";
 import OrderStatusBadge from "./OrderStatusBadge";
-import { Calendar, ShoppingBag, ArrowRight } from "lucide-react";
+import { Calendar, ShoppingBag, ArrowRight, Navigation } from "lucide-react";
+
+const TRACKABLE_STATUSES = [
+  "pending",
+  "accepted",
+  "preparing",
+  "ready",
+  "picked_up",
+  "out_for_delivery",
+];
 
 const OrderCard = ({ order }) => {
   const {
@@ -20,6 +29,7 @@ const OrderCard = ({ order }) => {
   });
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const isTrackable = TRACKABLE_STATUSES.includes(orderStatus);
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 p-5 flex flex-col md:flex-row justify-between gap-4">
@@ -76,13 +86,25 @@ const OrderCard = ({ order }) => {
           </div>
         </div>
 
-        <Link
-          to={`/orders/${_id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-pink-600 hover:text-pink-700 transition"
-        >
-          View Details
-          <ArrowRight size={14} />
-        </Link>
+        <div className="flex items-center gap-2">
+          {isTrackable && (
+            <Link
+              to={`/orders/${_id}/track`}
+              className="inline-flex items-center gap-1.5 text-xs font-bold bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-xl shadow-xs transition"
+            >
+              <Navigation size={12} />
+              Track
+            </Link>
+          )}
+
+          <Link
+            to={`/orders/${_id}`}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-pink-600 transition px-2 py-1.5"
+          >
+            Details
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </div>
     </div>
   );

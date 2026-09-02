@@ -34,6 +34,59 @@ import { customerIcon, restaurantIcon, riderIcon } from "./mapIcons";
 const CARRYING_STATUSES = ["picked_up", "out_for_delivery"];
 const FINISHED_STATUSES = ["delivered", "cancelled", "rejected"];
 
+// ── Helper to extract valid { latitude, longitude } from various object formats ──
+const extractPoint = (point) => {
+  if (!point) return null;
+
+  // 1. Direct valid coordinates
+  if (isValidCoordinate(point)) {
+    return {
+      ...point,
+      latitude: Number(point.latitude),
+      longitude: Number(point.longitude),
+    };
+  }
+
+  // 2. Nested currentLocation (e.g. rider user model)
+  if (point.currentLocation && isValidCoordinate(point.currentLocation)) {
+    return {
+      ...point,
+      latitude: Number(point.currentLocation.latitude),
+      longitude: Number(point.currentLocation.longitude),
+    };
+  }
+
+  // 3. Nested deliveryLocation (e.g. order deliveryLocation)
+  if (point.deliveryLocation && isValidCoordinate(point.deliveryLocation)) {
+    return {
+      ...point,
+      latitude: Number(point.deliveryLocation.latitude),
+      longitude: Number(point.deliveryLocation.longitude),
+    };
+  }
+
+  // 4. GeoJSON location: { coordinates: [lng, lat] }
+  const coords = point.location?.coordinates || point.coordinates;
+  if (
+    Array.isArray(coords) &&
+    coords.length === 2 &&
+    Number.isFinite(Number(coords[0])) &&
+    Number.isFinite(Number(coords[1]))
+  ) {
+    const lng = Number(coords[0]);
+    const lat = Number(coords[1]);
+    if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      return {
+        ...point,
+        latitude: lat,
+        longitude: lng,
+      };
+    }
+  }
+
+  return null;
+};
+
 // ── Fit the view to every known point ────────────────────────────────
 const FitBounds = ({ points, signature }) => {
   const map = useMap();
@@ -54,7 +107,15 @@ const FitBounds = ({ points, signature }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => map.invalidateSize(), 200);
-    return () => clearTimeout(timer);
+    const interval = setInterval(() => map.invalidateSize(), 1500);
+    const handleResize = () => map.invalidateSize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+      window.removeEventListener("resize", handleResize);
+    };
   }, [map]);
 
   return null;
@@ -77,9 +138,9 @@ const OrderTrackingMap = ({
     routeCallback.current = onRouteChange;
   }, [onRouteChange]);
 
-  const restaurantPoint = isValidCoordinate(restaurant) ? restaurant : null;
-  const customerPoint = isValidCoordinate(delivery) ? delivery : null;
-  const riderPoint = isValidCoordinate(rider) ? rider : null;
+  const restaurantPoint = extractPoint(restaurant);
+  const customerPoint = extractPoint(delivery);
+  const riderPoint = extractPoint(rider);
 
   const isCarrying =
     Boolean(riderPoint) && CARRYING_STATUSES.includes(orderStatus);

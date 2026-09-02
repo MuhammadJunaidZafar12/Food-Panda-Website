@@ -2,6 +2,7 @@ import Restaurant from "../models/restaurant.model.js";
 
 import {
     createProductService,
+    getMyProductsService,
     getAllProductsService,
     getProductByIdService,
     updateProductService,
@@ -69,7 +70,24 @@ export const createProduct = async (req, res, next) => {
 };
 
 // ==========================================
-// Get All Products
+// Get My Products (Owner only)
+// ==========================================
+
+export const getMyProducts = async (req, res, next) => {
+    try {
+        const products = await getMyProductsService(req.user._id);
+
+        res.status(200).json({
+            success: true,
+            products,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// ==========================================
+// Get All Products (Public / Filtered)
 // ==========================================
 
 export const getAllProducts = async (req, res, next) => {

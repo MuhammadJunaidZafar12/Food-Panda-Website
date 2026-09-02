@@ -37,6 +37,9 @@ export const customerIcon = createPin("#16a34a", "🏠");
 // Generic pin for the LocationPicker.
 export const pickerIcon = createPin("#e21b70", "📍");
 
+// User destination pin
+export const userDestinationIcon = createPin("#e21b70", "📍");
+
 /**
  * Rider marker — a pulsing dot rather than a pin, because it moves.
  */

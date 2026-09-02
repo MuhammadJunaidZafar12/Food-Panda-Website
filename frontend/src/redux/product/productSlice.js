@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import {
   createProductThunk,
+  getMyProductsThunk,
   getProductsThunk,
   getProductByIdThunk,
   updateProductThunk,
@@ -74,7 +75,37 @@ const productSlice = createSlice({
 
 
       // =====================================
-      // GET ALL
+      // GET MY PRODUCTS (OWNER)
+      // =====================================
+
+      .addCase(
+        getMyProductsThunk.pending,
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
+      )
+
+      .addCase(
+        getMyProductsThunk.fulfilled,
+        (state, action) => {
+          state.loading = false;
+          state.products =
+            action.payload?.products || [];
+        }
+      )
+
+      .addCase(
+        getMyProductsThunk.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error = action.payload;
+        }
+      )
+
+
+      // =====================================
+      // GET ALL (PUBLIC)
       // =====================================
 
       .addCase(

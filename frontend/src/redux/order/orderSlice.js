@@ -54,17 +54,24 @@ const orderSlice = createSlice({
     liveStatusUpdated(state, action) {
       const { orderId, orderStatus, statusHistory } = action.payload;
 
-      if (state.tracking?.orderId === orderId) {
+      const orderIdStr = orderId?.toString();
+
+      if (
+        state.tracking?.orderId?.toString() === orderIdStr ||
+        state.tracking?._id?.toString() === orderIdStr
+      ) {
         state.tracking.orderStatus = orderStatus;
         if (statusHistory) state.tracking.statusHistory = statusHistory;
       }
 
-      if (state.currentOrder?._id === orderId) {
+      if (state.currentOrder?._id?.toString() === orderIdStr) {
         state.currentOrder.orderStatus = orderStatus;
         if (statusHistory) state.currentOrder.statusHistory = statusHistory;
       }
 
-      const listed = state.orders.find((order) => order._id === orderId);
+      const listed = state.orders.find(
+        (order) => order._id?.toString() === orderIdStr
+      );
       if (listed) {
         listed.orderStatus = orderStatus;
         if (statusHistory) listed.statusHistory = statusHistory;
@@ -74,19 +81,40 @@ const orderSlice = createSlice({
     // New GPS position from the rider's device.
     liveRiderLocationUpdated(state, action) {
       const { orderId, latitude, longitude, updatedAt } = action.payload;
+      const orderIdStr = orderId?.toString();
 
-      if (state.tracking?.orderId === orderId && state.tracking.rider) {
+      if (
+        (state.tracking?.orderId?.toString() === orderIdStr ||
+          state.tracking?._id?.toString() === orderIdStr) &&
+        state.tracking.rider
+      ) {
         state.tracking.rider.latitude = latitude;
         state.tracking.rider.longitude = longitude;
         state.tracking.rider.locationUpdatedAt = updatedAt;
+      }
+
+      if (
+        state.currentOrder?._id?.toString() === orderIdStr &&
+        state.currentOrder.assignedRider
+      ) {
+        if (!state.currentOrder.assignedRider.currentLocation) {
+          state.currentOrder.assignedRider.currentLocation = {};
+        }
+        state.currentOrder.assignedRider.currentLocation.latitude = latitude;
+        state.currentOrder.assignedRider.currentLocation.longitude = longitude;
+        state.currentOrder.assignedRider.currentLocation.updatedAt = updatedAt;
       }
     },
 
     // A rider was assigned, or responded to their assignment.
     liveRiderAssignmentUpdated(state, action) {
       const { orderId, rider, riderStatus } = action.payload;
+      const orderIdStr = orderId?.toString();
 
-      if (state.tracking?.orderId === orderId) {
+      if (
+        state.tracking?.orderId?.toString() === orderIdStr ||
+        state.tracking?._id?.toString() === orderIdStr
+      ) {
         state.tracking.riderStatus = riderStatus;
         state.tracking.rider = rider
           ? {
@@ -102,7 +130,7 @@ const orderSlice = createSlice({
           : null;
       }
 
-      if (state.currentOrder?._id === orderId) {
+      if (state.currentOrder?._id?.toString() === orderIdStr) {
         state.currentOrder.riderStatus = riderStatus;
         state.currentOrder.assignedRider = rider || null;
       }

@@ -3,18 +3,23 @@ import { NavLink, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
-import { Menu, X, ShoppingCart, User, ChevronDown } from "lucide-react";
+import { Menu, X, ShoppingCart, User, ChevronDown, MapPin } from "lucide-react";
 
 import Logo from "../ui/Logo";
 import { logout } from "../../redux/auth/authSlice";
 import { resetCart } from "../../redux/cart/cartSlice";
 import { getCartThunk } from "../../redux/cart/cartThunk";
 import CartDrawer from "../cart/CartDrawer";
+import DestinationModal from "../map/DestinationModal";
+import useUserLocation from "../../hooks/useUserLocation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+
+  const { label, city, address, radius, hasCoordinates } = useUserLocation();
 
   const [search, setSearch] = useState("");
   const dropdownRef = useRef(null);
@@ -76,8 +81,25 @@ const Navbar = () => {
     <>
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          {/* Logo */}
-          <Logo variant="navbar" size="sm" />
+          {/* Logo & Location */}
+          <div className="flex items-center gap-6">
+            <Logo variant="navbar" size="sm" />
+
+            {/* Destination Location Badge */}
+            <button
+              onClick={() => setIsLocationModalOpen(true)}
+              className="hidden items-center gap-1.5 rounded-full border border-pink-200 bg-pink-50/80 px-3.5 py-1.5 text-xs font-semibold text-pink-700 transition hover:bg-pink-100 md:flex shadow-xs"
+              title="Set Delivery Location / Destination"
+            >
+              <MapPin size={14} className="text-pink-600 shrink-0" />
+              <span className="max-w-[140px] truncate text-gray-800">
+                {hasCoordinates ? (label || city || address || "Selected Location") : "Deliver to: Set Location"}
+              </span>
+              <span className="rounded-full bg-pink-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                {radius || 5} km
+              </span>
+            </button>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 lg:flex">
@@ -339,10 +361,30 @@ const Navbar = () => {
                   </Link>
                 </>
               )}
+
+              <hr className="my-3" />
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsLocationModalOpen(true);
+                }}
+                className="flex items-center gap-2 py-2 text-left text-sm font-semibold text-pink-600"
+              >
+                <MapPin size={16} />
+                <span>
+                  {hasCoordinates ? (label || city || "Change Location") : "Set Delivery Location (5km)"}
+                </span>
+              </button>
             </nav>
           </div>
         )}
       </header>
+
+      {/* Destination Location Modal */}
+      <DestinationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+      />
 
       {/* Cart Drawer */}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

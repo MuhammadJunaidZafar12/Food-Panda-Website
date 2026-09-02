@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getOrderByIdThunk, cancelOrderThunk } from "../../redux/order/orderThunk";
@@ -8,7 +8,25 @@ import OrderItemRow from "../../components/order/OrderItemRow";
 import OrderSummary from "../../components/order/OrderSummary";
 import OrderStatusBadge from "../../components/order/OrderStatusBadge";
 import RiderInfoCard from "../../components/order/RiderInfoCard";
-import { ArrowLeft, Clock, MapPin, Phone, MessageSquare, AlertCircle, X, Navigation } from "lucide-react";
+import OrderTrackingMap from "../../components/map/OrderTrackingMap";
+import useOrderSocket from "../../hooks/useOrderSocket";
+import {
+  formatDistance,
+  formatDuration,
+  formatEta,
+} from "../../services/location.service";
+import {
+  ArrowLeft,
+  Clock,
+  MapPin,
+  Phone,
+  MessageSquare,
+  AlertCircle,
+  X,
+  Navigation,
+  Route as RouteIcon,
+  Maximize2,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -36,6 +54,22 @@ const OrderDetailsPage = () => {
 
   const [openCancelModal, setOpenCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [route, setRoute] = useState(null);
+
+  const handleRouteChange = useCallback((next) => setRoute(next), []);
+
+  // Listen for real-time order status and rider location updates
+  useOrderSocket(
+    id,
+    useCallback((event, payload) => {
+      if (event === "order:status") {
+        toast.success("Order status updated!");
+      }
+      if (event === "order:rider-assigned" && payload?.rider) {
+        toast.success(`${payload.rider.name} is handling your delivery`);
+      }
+    }, [])
+  );
 
   // Fetch order details
   useEffect(() => {
@@ -192,7 +226,7 @@ const OrderDetailsPage = () => {
                     className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-2xl transition text-sm flex items-center justify-center gap-2 shadow-md"
                   >
                     <Navigation size={16} />
-                    Track Order Live
+                    Open Full Screen Tracker
                   </Link>
                 )}
 
@@ -208,6 +242,76 @@ const OrderDetailsPage = () => {
               </div>
             )}
           </div>
+
+          {/* Interactive Live Map Section */}
+          {isTrackable && (
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-xs space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-gray-900">Live Delivery Tracking</h2>
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-green-600" />
+                    </span>
+                    Live
+                  </span>
+                </div>
+
+                <Link
+                  to={`/orders/${id}/track`}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100 px-3 py-1.5 rounded-xl transition"
+                >
+                  <Maximize2 size={13} />
+                  Full Screen Map
+                </Link>
+              </div>
+
+              {route && (
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 bg-pink-50/40 p-3 rounded-2xl border border-pink-100/50">
+                  <span className="flex items-center gap-1.5 font-semibold text-gray-800">
+                    <Clock size={14} className="text-pink-600" />
+                    Arriving in: <strong className="text-pink-700">{formatDuration(route.duration)}</strong> (~{formatEta(route.duration)})
+                  </span>
+                  <span className="text-gray-300">•</span>
+                  <span className="flex items-center gap-1.5 font-semibold text-gray-800">
+                    <RouteIcon size={14} className="text-pink-600" />
+                    Distance: <strong className="text-gray-900">{formatDistance(route.distance)}</strong>
+                  </span>
+                </div>
+              )}
+
+              <OrderTrackingMap
+                restaurant={restaurant}
+                delivery={{
+                  address: deliveryAddress,
+                  latitude: deliveryLocation?.latitude,
+                  longitude: deliveryLocation?.longitude,
+                }}
+                rider={assignedRider}
+                orderStatus={orderStatus}
+                height={340}
+                onRouteChange={handleRouteChange}
+              />
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-600 pt-1 border-t border-gray-100">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-orange-500" />
+                  Restaurant
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-green-600" />
+                  Your address
+                </span>
+                {assignedRider && (
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-pink-600" />
+                    Rider ({assignedRider.name})
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Restaurant details and items */}
           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-xs space-y-6">
