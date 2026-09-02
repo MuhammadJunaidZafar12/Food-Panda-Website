@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
   createProduct,
+  getMyProducts,
   getProducts,
   getProductById,
   updateProduct,
@@ -25,7 +26,23 @@ export const createProductThunk = createAsyncThunk(
 );
 
 
-// Get All
+// Get My Products (Owner Only)
+export const getMyProductsThunk = createAsyncThunk(
+  "product/getMyProducts",
+  async (_, thunkAPI) => {
+    try {
+      return await getMyProducts();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to fetch your products."
+      );
+    }
+  }
+);
+
+
+// Get All (Public / by restaurant)
 export const getProductsThunk = createAsyncThunk(
   "product/getAll",
   async (restaurantId, thunkAPI) => {

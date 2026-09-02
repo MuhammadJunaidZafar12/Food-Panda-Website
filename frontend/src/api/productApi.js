@@ -6,6 +6,12 @@ export const createProduct = async (productData) => {
   return data;
 };
 
+// Get My Products (Owner only)
+export const getMyProducts = async () => {
+  const { data } = await api.get("/products/my-products");
+  return data;
+};
+
 // Get All Products
 export const getProducts = async (restaurantId) => {
   const url = restaurantId

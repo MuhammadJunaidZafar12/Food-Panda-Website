@@ -1,39 +1,111 @@
 import Restaurant from "../models/restaurant.model.js";
 import User from "../models/user.model.js";
 import slugify from "slugify";
-export const getAllRestaurants = async (search = "") => {
-  const filter = {
+export const getAllRestaurants = async (options = {}) => {
+  const params = typeof options === "string" ? { search: options } : options;
+  const {
+    search = "",
+    latitude,
+    longitude,
+    lat,
+    lng,
+    radius,
+    category,
+    sortBy = "nearest",
+    onlyDeliverable,
+  } = params;
+
+  const userLat = Number(latitude ?? lat);
+  const userLng = Number(longitude ?? lng);
+  const hasCoordinates =
+    Number.isFinite(userLat) &&
+    Number.isFinite(userLng) &&
+    userLat >= -90 &&
+    userLat <= 90 &&
+    userLng >= -180 &&
+    userLng <= 180;
+
+  const matchQuery = {
     status: "approved",
     isActive: true,
   };
 
-  if (search) {
-    filter.$or = [
-      {
-        name: {
-          $regex: search,
-          $options: "i",
-        },
-      },
-      {
-        category: {
-          $regex: search,
-          $options: "i",
-        },
-      },
-      {
-        city: {
-          $regex: search,
-          $options: "i",
-        },
-      },
+  if (category && category !== "all") {
+    matchQuery.category = { $regex: category, $options: "i" };
+  }
+
+  if (search && search.trim()) {
+    const searchRegex = { $regex: search.trim(), $options: "i" };
+    matchQuery.$or = [
+      { name: searchRegex },
+      { category: searchRegex },
+      { city: searchRegex },
+      { address: searchRegex },
     ];
   }
 
-  const restaurants = await Restaurant.find(filter).sort({
-    createdAt: -1,
-  });
+  if (hasCoordinates) {
+    const radiusNum = Number(radius);
+    const radiusInMeters =
+      Number.isFinite(radiusNum) && radiusNum > 0
+        ? radiusNum * 1000
+        : undefined;
 
+    const geoNearStage = {
+      $geoNear: {
+        near: {
+          type: "Point",
+          coordinates: [userLng, userLat],
+        },
+        distanceField: "distance", // distance in meters
+        spherical: true,
+        query: matchQuery,
+      },
+    };
+
+    if (radiusInMeters) {
+      geoNearStage.$geoNear.maxDistance = radiusInMeters;
+    }
+
+    const pipeline = [geoNearStage];
+
+    // If onlyDeliverable is true, match where distance <= deliveryRadius * 1000
+    if (onlyDeliverable === true || onlyDeliverable === "true") {
+      pipeline.push({
+        $match: {
+          $expr: {
+            $lte: ["$distance", { $multiply: ["$deliveryRadius", 1000] }],
+          },
+        },
+      });
+    }
+
+    // Sorting
+    if (sortBy === "rating") {
+      pipeline.push({ $sort: { rating: -1, distance: 1 } });
+    } else if (sortBy === "deliveryFee") {
+      pipeline.push({ $sort: { deliveryFee: 1, distance: 1 } });
+    } else {
+      // Default: nearest first
+      pipeline.push({ $sort: { distance: 1 } });
+    }
+
+    const restaurants = await Restaurant.aggregate(pipeline);
+    return restaurants;
+  }
+
+  // Fallback when no coordinates provided
+  let query = Restaurant.find(matchQuery);
+
+  if (sortBy === "rating") {
+    query = query.sort({ rating: -1, createdAt: -1 });
+  } else if (sortBy === "deliveryFee") {
+    query = query.sort({ deliveryFee: 1, createdAt: -1 });
+  } else {
+    query = query.sort({ createdAt: -1 });
+  }
+
+  const restaurants = await query.exec();
   return restaurants;
 };
 

@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   createProduct,
+  getMyProducts,
   getAllProducts,
   getProductById,
   updateProduct,
@@ -27,6 +28,18 @@ const router = Router();
 router.get(
   "/",
   getAllProducts
+);
+
+
+// ==========================================
+// Get My Products (Owner Only)
+// ==========================================
+
+router.get(
+  "/my-products",
+  protect,
+  authorizeOwner,
+  getMyProducts
 );
 
 

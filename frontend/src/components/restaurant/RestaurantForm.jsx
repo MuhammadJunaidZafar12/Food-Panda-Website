@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+
+import LocationPicker from "../map/LocationPicker";
+import { isValidCoordinate } from "../../services/location.service";
 
 const getInitialState = () => ({
   name: "",
@@ -33,6 +36,7 @@ const RestaurantForm = ({
   submitLabel,
 }) => {
   const [formData, setFormData] = useState(() => getFormData(initialValues));
+  const [locationError, setLocationError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -43,8 +47,30 @@ const RestaurantForm = ({
     }));
   };
 
+  // The map is the source of truth for the coordinates. The address and city
+  // that come back from reverse-geocoding are only used to fill those fields
+  // when they are still empty, so anything the owner typed is never lost.
+  const handleLocationChange = useCallback((picked) => {
+    setLocationError("");
+
+    setFormData((prev) => ({
+      ...prev,
+      latitude: picked.latitude,
+      longitude: picked.longitude,
+      address: prev.address?.trim() ? prev.address : picked.address || "",
+      city: prev.city?.trim() ? prev.city : picked.city || "",
+    }));
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Latitude/longitude are read-only inputs, so the browser skips their
+    // `required` check — the pin has to be validated here instead.
+    if (!isValidCoordinate({ latitude: formData.latitude, longitude: formData.longitude })) {
+      setLocationError("Please pick the restaurant location on the map.");
+      return;
+    }
 
     const payload = new FormData();
 
@@ -258,33 +284,56 @@ const RestaurantForm = ({
 
       {/* Coordinates */}
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <div>
-          <label className="mb-2 block font-medium">Latitude</label>
+      <div className="space-y-4 rounded-xl border border-gray-200 p-4">
+        <LocationPicker
+          value={{
+            latitude: formData.latitude,
+            longitude: formData.longitude,
+            address: formData.address,
+            city: formData.city,
+          }}
+          onChange={handleLocationChange}
+          height={320}
+          label="Restaurant location"
+          helperText="Search, drop a pin or use your current location. Riders and delivery distances are calculated from this exact point."
+        />
 
-          <input
-            type="number"
-            step="any"
-            name="latitude"
-            value={formData.latitude}
-            onChange={handleChange}
-            required
-            className="w-full rounded-lg border p-3"
-          />
-        </div>
+        {locationError && (
+          <p className="text-sm font-medium text-red-600">{locationError}</p>
+        )}
 
-        <div>
-          <label className="mb-2 block font-medium">Longitude</label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label className="mb-2 block font-medium">Latitude</label>
 
-          <input
-            type="number"
-            step="any"
-            name="longitude"
-            value={formData.longitude}
-            onChange={handleChange}
-            required
-            className="w-full rounded-lg border p-3"
-          />
+            <input
+              type="number"
+              step="any"
+              name="latitude"
+              value={formData.latitude}
+              onChange={handleChange}
+              readOnly
+              required
+              placeholder="Pick on the map"
+              className="w-full rounded-lg border bg-gray-50 p-3 text-gray-600"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block font-medium">Longitude</label>
+
+            <input
+              type="number"
+              step="any"
+              name="longitude"
+              value={formData.longitude}
+              onChange={handleChange}
+              readOnly
+              required
+              placeholder="Pick on the map"
+              className="w-full rounded-lg border bg-gray-50 p-3 text-gray-600"
+            />
+          </div>
         </div>
       </div>
 

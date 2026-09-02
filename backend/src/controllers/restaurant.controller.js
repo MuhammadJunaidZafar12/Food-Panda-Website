@@ -39,13 +39,33 @@ export const getRestaurants = async (
   next
 ) => {
   try {
-    const { search = "" } = req.query;
+    const {
+      search = "",
+      latitude,
+      longitude,
+      lat,
+      lng,
+      radius,
+      category,
+      sortBy,
+      onlyDeliverable,
+    } = req.query;
 
-    const restaurants =
-      await getAllRestaurants(search);
+    const restaurants = await getAllRestaurants({
+      search,
+      latitude,
+      longitude,
+      lat,
+      lng,
+      radius,
+      category,
+      sortBy,
+      onlyDeliverable,
+    });
 
     res.status(200).json({
       success: true,
+      count: restaurants.length,
       restaurants,
     });
   } catch (error) {

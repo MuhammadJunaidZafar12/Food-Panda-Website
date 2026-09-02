@@ -1,15 +1,71 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { MapPin, Crosshair, Loader2 } from "lucide-react";
 import { becomeOwnerUser } from "../../services/auth.service";
 import { saveUser } from "../../utils/storage";
 import { setUser } from "../../redux/auth/authSlice";
+import useUserLocation from "../../hooks/useUserLocation";
+import { searchAddress } from "../../services/location.service";
 
 const Hero = () => {
   const navigate = useNavigate();
   const heroImage = "https://picsum.photos/400/300?random=1";
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { locateUser, updateDestination, address } = useUserLocation();
+
+  const [searchLoc, setSearchLoc] = useState(address || "");
+  const [locating, setLocating] = useState(false);
+
+  const handleGpsLocate = async () => {
+    setLocating(true);
+    try {
+      const loc = await locateUser();
+      setSearchLoc(loc.address || "Current Location");
+      toast.success("Location detected! Finding nearby restaurants...");
+      navigate(
+        `/restaurants?lat=${loc.latitude}&lng=${loc.longitude}&radius=5`
+      );
+    } catch (err) {
+      toast.error(err.message || "Could not detect location.");
+    } finally {
+      setLocating(false);
+    }
+  };
+
+  const handleSearchNearby = async () => {
+    const query = searchLoc.trim();
+    if (!query) {
+      navigate("/restaurants?radius=5");
+      return;
+    }
+
+    try {
+      const results = await searchAddress(query, 1);
+      if (results.length > 0) {
+        const first = results[0];
+        updateDestination({
+          latitude: first.latitude,
+          longitude: first.longitude,
+          address: first.label,
+          city: first.city,
+          radius: 5,
+        });
+        navigate(
+          `/restaurants?lat=${first.latitude}&lng=${first.longitude}&radius=5&address=${encodeURIComponent(
+            first.label
+          )}`
+        );
+      } else {
+        // Fallback to text search
+        navigate(`/restaurants?search=${encodeURIComponent(query)}&radius=5`);
+      }
+    } catch {
+      navigate(`/restaurants?search=${encodeURIComponent(query)}&radius=5`);
+    }
+  };
 
   const handleClick = async () => {
     if (!isAuthenticated || !user) {
@@ -53,13 +109,83 @@ const Hero = () => {
             and get them delivered to your doorstep in minutes.
           </p>
 
-          {/* Search */}
-          <div className="w-sm mt-8 flex overflow-hidden rounded-xl border bg-pink-600 shadow-lg">
+          {/* Destination & Nearby Search Bar */}
+          <div className="mt-8 rounded-2xl bg-white p-3 shadow-xl border border-pink-100">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="relative flex-1">
+                <MapPin
+                  size={20}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pink-600"
+                />
+                <input
+                  type="text"
+                  value={searchLoc}
+                  onChange={(e) => setSearchLoc(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearchNearby()}
+                  placeholder="Enter your street or delivery address…"
+                  className="w-full rounded-xl bg-gray-50 py-3.5 pl-11 pr-4 text-sm text-gray-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-pink-200 border border-gray-200 focus:border-pink-500"
+                />
+              </div>
 
-            <button onClick={handleClick} className="px-6 text-white transition hover:bg-pink-700">
-              {user?.role === "owner" ? "You are an Owner" : "Become an Owner and list your restaurants"}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleGpsLocate}
+                  disabled={locating}
+                  className="flex items-center gap-1.5 rounded-xl border border-pink-200 bg-pink-50 px-4 py-3 text-xs font-bold text-pink-700 transition hover:bg-pink-100 active:scale-95 disabled:opacity-60 shrink-0"
+                  title="Detect my current GPS location"
+                >
+                  {locating ? (
+                    <Loader2 size={16} className="animate-spin text-pink-600" />
+                  ) : (
+                    <Crosshair size={16} className="text-pink-600" />
+                  )}
+                  <span>{locating ? "Locating…" : "Locate Me"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSearchNearby}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-6 py-3 text-sm font-bold text-white shadow-md shadow-pink-200 transition hover:bg-pink-700 active:scale-95 shrink-0"
+                >
+                  Find Food (5km)
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Filter Badges */}
+            <div className="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100 text-xs text-gray-600">
+              <span className="font-semibold text-gray-400">Popular:</span>
+              <button
+                onClick={handleGpsLocate}
+                className="rounded-full bg-pink-50 px-3 py-1 font-medium text-pink-700 transition hover:bg-pink-100"
+              >
+                📍 Within 5 km
+              </button>
+              <button
+                onClick={() => navigate("/restaurants?category=Fast Food")}
+                className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-700 transition hover:bg-gray-200"
+              >
+                🍔 Burgers & Fast Food
+              </button>
+              <button
+                onClick={() => navigate("/restaurants?category=Pizza")}
+                className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-700 transition hover:bg-gray-200"
+              >
+                🍕 Pizza
+              </button>
+            </div>
+          </div>
+
+          {/* Become Owner Quick Link */}
+          <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
+            <span>Want to partner with us?</span>
+            <button
+              onClick={handleClick}
+              className="font-semibold text-pink-600 underline hover:text-pink-700"
+            >
+              {user?.role === "owner" ? "Owner Dashboard" : "List your restaurant as an Owner"}
             </button>
-
           </div>
 
           {/* Stats */}
