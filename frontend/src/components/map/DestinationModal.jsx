@@ -18,7 +18,6 @@ const DestinationModal = ({ isOpen, onClose, onSelect }) => {
     latitude,
     longitude,
     address,
-    city,
     radius,
     locateUser,
     isLocating,
@@ -33,15 +32,10 @@ const DestinationModal = ({ isOpen, onClose, onSelect }) => {
   const [selectedRadius, setSelectedRadius] = useState(radius || 5);
   const [gpsError, setGpsError] = useState("");
 
-  useEffect(() => {
-    setSelectedRadius(radius || 5);
-  }, [radius]);
-
   // Debounced search for addresses
   useEffect(() => {
     const trimmed = query.trim();
     if (trimmed.length < 3) {
-      setResults([]);
       return;
     }
 
@@ -65,6 +59,8 @@ const DestinationModal = ({ isOpen, onClose, onSelect }) => {
   }, [query]);
 
   if (!isOpen) return null;
+
+  const visibleResults = query.trim().length >= 3 ? results : [];
 
   const handleGpsClick = async () => {
     setGpsError("");
@@ -179,7 +175,7 @@ const DestinationModal = ({ isOpen, onClose, onSelect }) => {
             </div>
 
             {/* Results dropdown */}
-            {(searching || results.length > 0) && (
+            {(searching || visibleResults.length > 0) && (
               <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl">
                 {searching && (
                   <div className="flex items-center gap-2 p-3 text-xs text-gray-500">
@@ -188,7 +184,7 @@ const DestinationModal = ({ isOpen, onClose, onSelect }) => {
                   </div>
                 )}
                 {!searching &&
-                  results.map((res, idx) => (
+                  visibleResults.map((res, idx) => (
                     <button
                       key={`${res.latitude}-${res.longitude}-${idx}`}
                       type="button"

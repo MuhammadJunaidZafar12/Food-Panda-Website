@@ -15,10 +15,9 @@ const ProductCard = ({
   onEdit,
   onDelete,
   role = "customer",
-  restaurantId,
 }) => {
   const dispatch = useDispatch();
-  const { loading: cartLoading, error: cartError } = useSelector(
+  const { loading: cartLoading } = useSelector(
     (state) => state.cart
   );
 
@@ -211,4 +210,4 @@ const ProductCard = ({
   );
 };
 
-export default ProductCard;
+export default ProductCard;

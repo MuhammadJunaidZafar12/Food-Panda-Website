@@ -1,4 +1,4 @@
-import { Clock3, Star, Bike, MapPin, CheckCircle2 } from "lucide-react";
+import { Clock3, Star, Bike, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   approveRestaurantThunk,

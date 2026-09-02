@@ -1,6 +1,9 @@
 import { offers } from "../../data/homeData";
+import { useNavigate } from "react-router-dom";
 
 const Offers = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-white py-16">
       <div className="mx-auto max-w-7xl px-6">
@@ -29,7 +32,10 @@ const Offers = () => {
                 {offer.description}
               </p>
 
-              <button className="mt-8 rounded-xl bg-white px-6 py-3 font-semibold text-pink-600 transition hover:scale-105">
+              <button
+                onClick={() => navigate("/restaurants")}
+                className="mt-8 rounded-xl bg-white px-6 py-3 font-semibold text-pink-600 transition hover:scale-105"
+              >
                 Order Now
               </button>
             </div>

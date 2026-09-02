@@ -8,7 +8,7 @@ import {
   useMap,
 } from "react-leaflet";
 import { Link } from "react-router-dom";
-import { Star, Clock, Bike, MapPin, ExternalLink } from "lucide-react";
+import { Star, Bike, MapPin, ExternalLink } from "lucide-react";
 import { DEFAULT_CENTER, formatDistance } from "../../services/location.service";
 import { restaurantIcon, userDestinationIcon } from "../map/mapIcons";
 

@@ -102,7 +102,9 @@ const locationSlice = createSlice({
           STORAGE_KEY,
           JSON.stringify({ ...stored, radius: state.radius })
         );
-      } catch (e) {}
+      } catch (error) {
+        console.error("Failed to save radius to storage", error);
+      }
     },
 
     clearDestination: (state) => {
@@ -116,7 +118,9 @@ const locationSlice = createSlice({
       state.locationError = null;
       try {
         localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {}
+      } catch (error) {
+        console.error("Failed to clear destination from storage", error);
+      }
     },
 
     setLocating: (state, action) => {

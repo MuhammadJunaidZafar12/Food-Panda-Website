@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,16 +8,10 @@ import {
   Map as MapIcon,
   SlidersHorizontal,
   ArrowUpDown,
-  Search,
-  X,
-  Sparkles,
-  CheckCircle,
-  Filter,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import RestaurantGrid from "../../components/restaurant/RestaurantGrid";
-import EmptyRestaurants from "../../components/restaurant/EmptyRestaurants";
 import RestaurantSkeleton from "../../components/restaurant/RestaurantSkeleton";
 import NearbyMap from "../../components/restaurant/NearbyMap";
 import DestinationModal from "../../components/map/DestinationModal";
@@ -56,13 +50,11 @@ const Restaurants = () => {
     latitude: savedLat,
     longitude: savedLng,
     address: savedAddress,
-    city: savedCity,
     label: savedLabel,
     radius: savedRadius,
     locateUser,
     isLocating,
     updateRadius,
-    hasCoordinates,
   } = useUserLocation();
 
   // Read URL params or fallback to state
@@ -171,16 +163,6 @@ const Restaurants = () => {
       } else {
         next.delete("category");
       }
-      return next;
-    });
-  };
-
-  const handleClearLocation = () => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.delete("lat");
-      next.delete("lng");
-      next.delete("radius");
       return next;
     });
   };

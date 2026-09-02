@@ -49,6 +49,8 @@ const AppRoutes = () => {
           }
         >
           <Route path="/" element={<Home />} />
+          <Route path="/restaurants" element={<Restaurants />} />
+          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/orders/:id" element={<OrderDetails />} />
@@ -74,24 +76,6 @@ const AppRoutes = () => {
         />
 
         <Route
-          path="/restaurants"
-          element={
-            <ProtectedRoute>
-              <Restaurants />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/restaurants/:id"
-          element={
-            <ProtectedRoute>
-              <RestaurantDetails />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
           path="/owner"
           element={
             <ProtectedRoute>
@@ -99,7 +83,7 @@ const AppRoutes = () => {
                 <DashboardLayout />
               </OwnerProtected>
             </ProtectedRoute>
-          }
+          } 
         >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />

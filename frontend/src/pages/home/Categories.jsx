@@ -1,6 +1,9 @@
 import { categories } from "../../data/homeData";
+import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-white py-16">
       <div className="mx-auto max-w-7xl px-6">
@@ -24,6 +27,7 @@ const Categories = () => {
           {categories.map((category) => (
             <button
               key={category.id}
+              onClick={() => navigate(`/restaurants?category=${encodeURIComponent(category.name)}`)}
               className="
                 group
                 rounded-2xl
