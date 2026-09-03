@@ -27,6 +27,7 @@ import MyOrders from "../pages/order/MyOrdersPage";
 import OrderDetails from "../pages/order/OrderDetailsPage";
 import OrderConfirmation from "../pages/order/OrderConfirmationPage";
 import OrderTracking from "../pages/order/OrderTrackingPage";
+import Profile from "../pages/profile/Profile";
 import OwnerOrders from "../pages/owner/OwnerOrders";
 import AdminOrders from "../pages/admin/AdminOrders";
 import AdminRiders from "../pages/admin/AdminRiders";
@@ -35,6 +36,7 @@ import RiderLayout from "../components/layout/RiderLayout";
 import RiderDashboard from "../pages/rider/RiderDashboard";
 import RiderOrders from "../pages/rider/RiderOrders";
 import RiderOrderDetails from "../pages/rider/RiderOrderDetails";
+import Analytics from "../pages/owner/Analytics";
 
 
 const AppRoutes = () => {
@@ -56,6 +58,7 @@ const AppRoutes = () => {
           <Route path="/orders/:id" element={<OrderDetails />} />
           <Route path="/orders/:id/confirmation" element={<OrderConfirmation />} />
           <Route path="/orders/:id/track" element={<OrderTracking />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route
@@ -92,6 +95,7 @@ const AppRoutes = () => {
           <Route path="restaurants/:id/edit" element={<EditRestaurant />} />
           <Route path="products" element={<OwnerProducts />} />
           <Route path="orders" element={<OwnerOrders />} />
+          <Route path="dashboard/analytics" element={<Analytics />} />
 
         </Route>
 

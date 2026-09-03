@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   Settings,
 } from "lucide-react";
+import DashboardNavActions from "./DashboardNavActions";
 
 const navItems = [
   { to: "/owner", label: "Dashboard", icon: LayoutDashboard },
@@ -49,6 +50,8 @@ function Sidebar() {
           );
         })}
       </nav>
+
+      <DashboardNavActions />
     </aside>
   );
 }

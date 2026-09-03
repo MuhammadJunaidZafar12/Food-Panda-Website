@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Building2, CheckCircle2, XCircle, Users, ShoppingBag, Bike } from "lucide-react";
+import DashboardNavActions from "./DashboardNavActions";
 
 const navItems = [
   { to: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -41,6 +42,8 @@ const AdminSidebar = () => {
           );
         })}
       </nav>
+
+      <DashboardNavActions />
     </aside>
   );
 };

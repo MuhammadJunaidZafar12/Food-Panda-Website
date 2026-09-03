@@ -5,7 +5,14 @@ import generateToken from "../utils/generateToken.js";
 
 export const register = async (req, res) => {
     try {
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, role = "customer" } = req.body;
+
+        if (!['customer', 'rider'].includes(role)) {
+          return res.status(400).json({
+            success: false,
+            message: "Registration role must be customer or rider.",
+          });
+        }
 
         // Check required fields
         if (!name || !email || !password) {
@@ -34,6 +41,7 @@ export const register = async (req, res) => {
             email,
             password,
             phone,
+            role,
         });
 
         // Generate JWT
@@ -169,6 +177,86 @@ export const getMe = async (req, res) => {
     success: true,
     user: req.user,
   });
+};
+
+// Get the signed-in user's profile.
+export const getProfile = async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    user: req.user,
+  });
+};
+
+// Update the signed-in user's profile.
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+
+    if (name !== undefined && !name.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Name cannot be empty.",
+      });
+    }
+
+    if (email !== undefined && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid email address.",
+      });
+    }
+
+    if (password !== undefined && password !== "" && password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters.",
+      });
+    }
+
+    if (email !== undefined) {
+      const existingUser = await User.findOne({
+        email: email.trim().toLowerCase(),
+        _id: { $ne: req.user._id },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: "Email already exists.",
+        });
+      }
+    }
+
+    const user = await User.findById(req.user._id);
+    user.name = name === undefined ? user.name : name.trim();
+    user.email = email === undefined ? user.email : email.trim().toLowerCase();
+    user.phone = phone === undefined ? user.phone : phone.trim();
+
+    if (password) {
+      user.password = password;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully.",
+      user: {
+        id: user._id,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update profile.",
+    });
+  }
 };
 
 // Get all users (Admin only)

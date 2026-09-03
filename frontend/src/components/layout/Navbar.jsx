@@ -111,9 +111,9 @@ const Navbar = () => {
               Restaurants
             </NavLink>
 
-            <NavLink to="/offers" className={navLinkClass}>
+            {/* <NavLink to="/offers" className={navLinkClass}>
               Offers
-            </NavLink>
+            </NavLink> */}
           </nav>
 
           {/* Right Side */}

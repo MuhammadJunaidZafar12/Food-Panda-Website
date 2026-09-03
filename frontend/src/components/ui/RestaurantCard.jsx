@@ -5,9 +5,17 @@ import {
   rejectRestaurantThunk,
 } from "../../redux/restaurant/restaurantThunk";
 import { useDispatch } from "react-redux";
-import { formatDistance } from "../../services/location.service";
+import {
+  formatDistance,
+  haversineDistance,
+} from "../../services/location.service";
 
-const RestaurantCard = ({ restaurant, role = "customer" }) => {
+const RestaurantCard = ({
+  restaurant,
+  role = "customer",
+  userLatitude,
+  userLongitude,
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -19,26 +27,48 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
     dispatch(rejectRestaurantThunk(restaurant._id));
   };
 
+  const restaurantCoordinates = restaurant.location?.coordinates;
+  const hasUserCoordinates =
+    Number.isFinite(Number(userLatitude)) &&
+    Number.isFinite(Number(userLongitude));
+  const hasRestaurantCoordinates =
+    Array.isArray(restaurantCoordinates) &&
+    restaurantCoordinates.length === 2 &&
+    Number.isFinite(Number(restaurantCoordinates[0])) &&
+    Number.isFinite(Number(restaurantCoordinates[1]));
+  const calculatedDistance =
+    hasUserCoordinates && hasRestaurantCoordinates
+      ? haversineDistance(
+          { latitude: Number(userLatitude), longitude: Number(userLongitude) },
+          {
+            latitude: Number(restaurantCoordinates[1]),
+            longitude: Number(restaurantCoordinates[0]),
+          }
+        )
+      : null;
   const hasDistance =
     restaurant.distance !== undefined &&
     restaurant.distance !== null &&
-    !isNaN(restaurant.distance);
+    Number.isFinite(Number(restaurant.distance));
+  const distanceInMeters = hasDistance
+    ? Number(restaurant.distance)
+    : calculatedDistance;
+  const hasUsableDistance = Number.isFinite(distanceInMeters);
 
-  const formattedDist = hasDistance
-    ? formatDistance(restaurant.distance)
+  const formattedDist = hasUsableDistance
+    ? formatDistance(distanceInMeters)
     : null;
 
-  const distanceInKm = hasDistance ? restaurant.distance / 1000 : null;
+  const distanceInKm = hasUsableDistance ? distanceInMeters / 1000 : null;
 
-  // Calculate estimated delivery time: e.g. 15-20 min base + ~3 min per km
-  const estimatedTime =
-    restaurant.deliveryTime ||
-    (distanceInKm !== null
-      ? `${Math.max(15, Math.round(15 + distanceInKm * 3))} - ${Math.max(
-          25,
-          Math.round(25 + distanceInKm * 3)
-        )} mins`
-      : "20 - 35 mins");
+  // Estimate the time to cover the road distance at an urban average speed.
+  const estimatedTime = hasUsableDistance
+    ? (() => {
+        const roadDistanceInKm = distanceInKm * 1.3;
+        const travelMinutes = Math.max(1, Math.ceil((roadDistanceInKm / 25) * 60));
+        return `${travelMinutes} min`;
+      })()
+    : "Set your location";
 
   const withinDeliveryRadius =
     restaurant.deliveryRadius && distanceInKm !== null
@@ -110,8 +140,19 @@ const RestaurantCard = ({ restaurant, role = "customer" }) => {
             <span className="font-medium text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">
               {restaurant.category}
             </span>
-            {restaurant.city && <span>• {restaurant.city}</span>}
           </div>
+
+          {(restaurant.address || restaurant.location?.address || restaurant.city) && (
+            <div className="mt-2 flex items-start gap-1.5 text-sm text-gray-500">
+              <MapPin size={15} className="mt-0.5 shrink-0 text-gray-400" />
+              <span className="line-clamp-2">
+                {restaurant.address || restaurant.location?.address}
+                {(restaurant.address || restaurant.location?.address) && restaurant.city
+                  ? `, ${restaurant.city}`
+                  : restaurant.city}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-600">

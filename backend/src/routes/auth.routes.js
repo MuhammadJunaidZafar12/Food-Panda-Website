@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, getMe, becomeOwner, getAllUsers, updateUserRole, deleteUser } from "../controllers/auth.controller.js";
+import { register, login, getMe, getProfile, updateProfile, becomeOwner, getAllUsers, updateUserRole, deleteUser } from "../controllers/auth.controller.js";
 import { protect, authorize } from "../middleware/auth.middleware.js";
 
 
@@ -8,6 +8,8 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.get("/me", protect, getMe);
+router.get("/profile", protect, getProfile);
+router.patch("/profile", protect, updateProfile);
 router.patch("/become-owner", protect, becomeOwner);
 
 // Admin user management routes

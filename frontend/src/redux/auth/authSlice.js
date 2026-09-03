@@ -3,11 +3,13 @@ import {
     loginThunk,
     registerThunk,
     getCurrentUserThunk,
+    getProfileThunk,
+    updateProfileThunk,
     getAllUsersThunk,
     updateUserRoleThunk,
     deleteUserThunk,
 } from "./authThunk";
-import { getToken, getUser, clearStorage } from "../../utils/storage";
+import { getToken, getUser, clearStorage, saveUser } from "../../utils/storage";
 
 const initialState = {
     user: getUser(),
@@ -84,6 +86,23 @@ const authSlice = createSlice({
                 state.token = null;
                 state.isAuthenticated = false;
                 clearStorage();
+            })
+            .addCase(getProfileThunk.fulfilled, (state, action) => {
+                state.user = action.payload.user;
+                saveUser(action.payload.user);
+            })
+            .addCase(updateProfileThunk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateProfileThunk.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload.user;
+                saveUser(action.payload.user);
+            })
+            .addCase(updateProfileThunk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
             .addCase(getAllUsersThunk.pending, (state) => {
                 state.usersLoading = true;

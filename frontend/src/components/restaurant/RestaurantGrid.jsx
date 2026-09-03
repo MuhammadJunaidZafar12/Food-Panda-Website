@@ -1,6 +1,6 @@
 import RestaurantCard from "../ui/RestaurantCard";
 
-const RestaurantGrid = ({ restaurants }) => {
+const RestaurantGrid = ({ restaurants, userLatitude, userLongitude }) => {
   return (
     <div
       className="
@@ -17,6 +17,8 @@ const RestaurantGrid = ({ restaurants }) => {
         <RestaurantCard
           key={restaurant._id}
           restaurant={restaurant}
+          userLatitude={userLatitude}
+          userLongitude={userLongitude}
         />
       ))}
     </div>

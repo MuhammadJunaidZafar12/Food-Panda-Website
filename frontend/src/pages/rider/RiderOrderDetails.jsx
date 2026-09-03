@@ -320,7 +320,7 @@ const RiderOrderDetails = () => {
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {restaurant?.phone && (
+                {/* {restaurant?.phone && (
                   <a
                     href={`tel:${restaurant.phone}`}
                     className="flex items-center gap-1.5 rounded-xl border border-gray-200 px-3 py-2 text-xs font-bold text-gray-700 transition hover:bg-gray-50"
@@ -328,9 +328,9 @@ const RiderOrderDetails = () => {
                     <Phone size={13} />
                     Call restaurant
                   </a>
-                )}
+                )} */}
 
-                {restaurantCoords?.length === 2 && (
+                {/* {restaurantCoords?.length === 2 && (
                   <a
                     href={directionsUrl(restaurantCoords[1], restaurantCoords[0])}
                     target="_blank"
@@ -340,7 +340,7 @@ const RiderOrderDetails = () => {
                     <Navigation size={13} />
                     Directions
                   </a>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -380,7 +380,7 @@ const RiderOrderDetails = () => {
               )}
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {phone && (
+                {/* {phone && (
                   <a
                     href={`tel:${phone}`}
                     className="flex items-center gap-1.5 rounded-xl border border-gray-200 px-3 py-2 text-xs font-bold text-gray-700 transition hover:bg-gray-50"
@@ -388,9 +388,9 @@ const RiderOrderDetails = () => {
                     <Phone size={13} />
                     Call customer
                   </a>
-                )}
+                )} */}
 
-                {deliveryLocation?.latitude && deliveryLocation?.longitude && (
+                {/* {deliveryLocation?.latitude && deliveryLocation?.longitude && (
                   <a
                     href={directionsUrl(
                       deliveryLocation.latitude,
@@ -403,7 +403,7 @@ const RiderOrderDetails = () => {
                     <Navigation size={13} />
                     Directions
                   </a>
-                )}
+                )} */}
               </div>
             </div>
           </div>

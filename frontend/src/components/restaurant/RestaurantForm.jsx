@@ -47,9 +47,7 @@ const RestaurantForm = ({
     }));
   };
 
-  // The map is the source of truth for the coordinates. The address and city
-  // that come back from reverse-geocoding are only used to fill those fields
-  // when they are still empty, so anything the owner typed is never lost.
+  // The map is the source of truth for the coordinates and address.
   const handleLocationChange = useCallback((picked) => {
     setLocationError("");
 
@@ -57,8 +55,8 @@ const RestaurantForm = ({
       ...prev,
       latitude: picked.latitude,
       longitude: picked.longitude,
-      address: prev.address?.trim() ? prev.address : picked.address || "",
-      city: prev.city?.trim() ? prev.city : picked.city || "",
+      address: picked.address || "",
+      city: picked.city || "",
     }));
   }, []);
 

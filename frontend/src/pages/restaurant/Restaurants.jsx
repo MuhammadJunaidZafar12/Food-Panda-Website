@@ -407,12 +407,20 @@ const Restaurants = () => {
               <h2 className="text-xl font-bold text-gray-900 mb-4">
                 Nearby Restaurants List
               </h2>
-              <RestaurantGrid restaurants={restaurants} />
+              <RestaurantGrid
+                restaurants={restaurants}
+                userLatitude={effectiveLat}
+                userLongitude={effectiveLng}
+              />
             </div>
           </div>
         ) : (
           /* Grid View */
-          <RestaurantGrid restaurants={restaurants} />
+          <RestaurantGrid
+            restaurants={restaurants}
+            userLatitude={effectiveLat}
+            userLongitude={effectiveLng}
+          />
         )}
       </div>
 

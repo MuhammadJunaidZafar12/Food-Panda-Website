@@ -150,7 +150,7 @@ const RiderDashboard = () => {
               Delivery fees earned
             </p>
             <p className="text-xl font-black text-gray-900">
-              Rs. {(stats?.totalDeliveryFees ?? 0).toLocaleString()}
+              Rs. {Number(stats?.totalDeliveryFees ?? 0).toLocaleString()}
             </p>
           </div>
         </div>

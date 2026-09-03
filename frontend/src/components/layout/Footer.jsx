@@ -1,9 +1,8 @@
 import {
-  FaFacebookF,
-  FaInstagram,
+  FaGithub,
   FaLinkedinIn,
-  FaXTwitter,
 } from "react-icons/fa6";
+import { Mail, Phone } from "lucide-react";
 
 import Logo from "../ui/Logo";
 
@@ -31,7 +30,7 @@ const Footer = () => {
 
             <ul className="space-y-3 text-gray-600">
               <li>
-                <a href="#" className="transition hover:text-pink-600">
+                <a href="/#about" className="transition hover:text-pink-600">
                   About Us
                 </a>
               </li>
@@ -81,31 +80,39 @@ const Footer = () => {
 
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://github.com/MuhammadJunaidZafar12"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub"
                 className="rounded-full bg-pink-100 p-3 text-pink-600 transition hover:bg-pink-600 hover:text-white"
               >
-                <FaFacebookF size={18} />
+                <FaGithub size={18} />
               </a>
 
               <a
-                href="#"
-                className="rounded-full bg-pink-100 p-3 text-pink-600 transition hover:bg-pink-600 hover:text-white"
-              >
-                <FaInstagram size={18} />
-              </a>
-
-              <a
-                href="#"
-                className="rounded-full bg-pink-100 p-3 text-pink-600 transition hover:bg-pink-600 hover:text-white"
-              >
-                <FaXTwitter size={18} />
-              </a>
-
-              <a
-                href="#"
+                href="https://www.linkedin.com/in/junaid-zafar70"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="LinkedIn"
                 className="rounded-full bg-pink-100 p-3 text-pink-600 transition hover:bg-pink-600 hover:text-white"
               >
                 <FaLinkedinIn size={18} />
+              </a>
+
+              <a
+                href="mailto:junaidzafar434@gmail.com"
+                aria-label="Email us"
+                className="rounded-full bg-pink-100 p-3 text-pink-600 transition hover:bg-pink-600 hover:text-white"
+              >
+                <Mail size={18} />
+              </a>
+
+              <a
+                href="tel:+923461255799"
+                aria-label="Contact us"
+                className="rounded-full bg-pink-100 p-3 text-pink-600 transition hover:bg-pink-600 hover:text-white"
+              >
+                <Phone size={18} />
               </a>
             </div>
           </div>

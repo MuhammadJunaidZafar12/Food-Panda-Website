@@ -3,6 +3,8 @@ import {
   registerUser,
   loginUser,
   getCurrentUser,
+  getProfile,
+  updateProfile,
   getAllUsers,
   updateUserRole,
   deleteUser,
@@ -107,6 +109,32 @@ export const deleteUserThunk = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to delete user"
+      );
+    }
+  }
+);
+
+export const getProfileThunk = createAsyncThunk(
+  "auth/getProfile",
+  async (_, thunkAPI) => {
+    try {
+      return await getProfile();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch profile"
+      );
+    }
+  }
+);
+
+export const updateProfileThunk = createAsyncThunk(
+  "auth/updateProfile",
+  async (profileData, thunkAPI) => {
+    try {
+      return await updateProfile(profileData);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to update profile"
       );
     }
   }

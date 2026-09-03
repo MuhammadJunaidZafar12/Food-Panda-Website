@@ -15,6 +15,14 @@
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org";
 const OSRM_URL = "https://router.project-osrm.org";
 
+const getCity = (details = {}) =>
+  details.city ||
+  details.town ||
+  details.village ||
+  details.municipality ||
+  details.city_district ||
+  "";
+
 // Fallback map centre (Karachi) used when we have nothing else to show.
 export const DEFAULT_CENTER = { latitude: 24.8607, longitude: 67.0011 };
 
@@ -130,13 +138,7 @@ export const reverseGeocode = async (latitude, longitude) => {
 
     return {
       address: data.display_name || fallback.address,
-      city:
-        details.city ||
-        details.town ||
-        details.village ||
-        details.county ||
-        details.state_district ||
-        "",
+      city: getCity(details),
       postalCode: details.postcode || "",
     };
   } catch {
@@ -171,12 +173,7 @@ export const searchAddress = async (query, limit = 5) => {
       label: result.display_name,
       latitude: parseFloat(result.lat),
       longitude: parseFloat(result.lon),
-      city:
-        result.address?.city ||
-        result.address?.town ||
-        result.address?.village ||
-        result.address?.county ||
-        "",
+      city: getCity(result.address),
       postalCode: result.address?.postcode || "",
     }));
   } catch {

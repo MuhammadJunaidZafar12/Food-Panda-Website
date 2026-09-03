@@ -475,10 +475,17 @@ export const getRiderStatsService = async (riderId) => {
     }),
     Order.countDocuments({ assignedRider: riderId, riderStatus: "rejected" }),
 
-    // Delivery fees carried by the orders this rider completed.
+    // A rider earns the delivery fee only after completing an order.
     Order.aggregate([
       { $match: { assignedRider: riderId, orderStatus: "delivered" } },
-      { $group: { _id: null, total: { $sum: "$deliveryFee" } } },
+      {
+        $group: {
+          _id: null,
+          totalDeliveryFees: {
+            $sum: { $ifNull: ["$deliveryFee", 0] },
+          },
+        },
+      },
     ]),
   ]);
 
@@ -488,7 +495,7 @@ export const getRiderStatsService = async (riderId) => {
     totalDeliveries,
     todayDeliveries,
     rejectedCount,
-    totalDeliveryFees: earningsResult[0]?.total || 0,
+    totalDeliveryFees: earningsResult[0]?.totalDeliveryFees || 0,
 
     // Lets the dashboard restore the online/offline toggle on reload.
     isAvailable: rider?.isAvailable || false,

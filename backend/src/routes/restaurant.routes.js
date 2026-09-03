@@ -16,6 +16,7 @@ import {
 import { protect, authorizeOwner, authorize } from "../middleware/auth.middleware.js";
 import upload from "../middleware/upload.middleware.js";
 import { Router } from "express";
+import { getOwnerAnalyticsDashboard } from "../controllers/analytics.controller.js";
 
 const router = Router();
 // Admin Routes
@@ -100,5 +101,12 @@ router.put(
 );
 router.delete("/:id", protect, authorizeOwner, deleteRestaurant);
 
+// Owner Analytics Routes
+router.get(
+  "/owner/analytics/dashboard",
+  protect,
+  authorizeOwner,
+  getOwnerAnalyticsDashboard
+);
 
 export default router;

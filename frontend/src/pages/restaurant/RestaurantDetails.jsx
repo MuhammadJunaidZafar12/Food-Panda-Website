@@ -1,10 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Clock3, Star, Bike, MapPin } from "lucide-react";
 import { getPublicRestaurantByIdThunk } from "../../redux/restaurant/restaurantThunk";
 import { getProductsThunk } from "../../redux/product/productThunk";
 import ProductCard from "../../components/product/ProductCard";
+import useUserLocation from "../../hooks/useUserLocation";
+import {
+  formatDuration,
+  getRoute,
+  haversineDistance,
+} from "../../services/location.service";
 
 const RestaurantDetails = () => {
   const { id } = useParams();
@@ -12,6 +18,8 @@ const RestaurantDetails = () => {
 
   const { currentRestaurant, loading: restaurantLoading, error: restaurantError } = useSelector((state) => state.restaurant);
   const { products, loading: productsLoading, error: productsError } = useSelector((state) => state.product);
+  const { latitude, longitude } = useUserLocation();
+  const [routeDuration, setRouteDuration] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -19,6 +27,40 @@ const RestaurantDetails = () => {
       dispatch(getProductsThunk(id));
     }
   }, [dispatch, id]);
+
+  const restaurantCoordinates = currentRestaurant?.location?.coordinates;
+  const hasRestaurantCoordinates =
+    Array.isArray(restaurantCoordinates) &&
+    restaurantCoordinates.length === 2 &&
+    Number.isFinite(Number(restaurantCoordinates[0])) &&
+    Number.isFinite(Number(restaurantCoordinates[1]));
+  const hasUserCoordinates =
+    Number.isFinite(Number(latitude)) && Number.isFinite(Number(longitude));
+
+  useEffect(() => {
+    if (!hasRestaurantCoordinates || !hasUserCoordinates) return undefined;
+
+    let cancelled = false;
+    getRoute(
+      { latitude, longitude },
+      {
+        latitude: Number(restaurantCoordinates[1]),
+        longitude: Number(restaurantCoordinates[0]),
+      }
+    ).then((route) => {
+      if (!cancelled) setRouteDuration(route?.duration || null);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    latitude,
+    longitude,
+    hasRestaurantCoordinates,
+    hasUserCoordinates,
+    restaurantCoordinates,
+  ]);
 
   if (restaurantLoading || !currentRestaurant) {
     return (
@@ -38,6 +80,27 @@ const RestaurantDetails = () => {
       </div>
     );
   }
+
+  const distanceInKm =
+    hasRestaurantCoordinates && hasUserCoordinates
+      ? haversineDistance(
+          { latitude, longitude },
+          {
+            latitude: Number(restaurantCoordinates[1]),
+            longitude: Number(restaurantCoordinates[0]),
+          }
+        ) / 1000
+      : null;
+  const approximateDeliveryTime =
+    currentRestaurant.deliveryTime ||
+    (routeDuration
+      ? `${formatDuration(Math.ceil(routeDuration / 300) * 300 + 15 * 60)} - ${formatDuration(
+          Math.ceil(routeDuration / 300) * 300 + 25 * 60
+        )}`
+      : `${Math.max(20, Math.round(20 + (distanceInKm || 0) * 3))} - ${Math.max(
+          35,
+          Math.round(35 + (distanceInKm || 0) * 3)
+        )} mins`);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -95,18 +158,20 @@ const RestaurantDetails = () => {
             <div className="mt-6 flex flex-wrap items-center gap-6 text-gray-600">
               <div className="flex items-center gap-2">
                 <Clock3 size={20} className="text-gray-400" />
-                <span>{currentRestaurant.deliveryTime || "N/A"}</span>
+                <span>Approx. {approximateDeliveryTime}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Bike size={20} className="text-gray-400" />
                 <span>{currentRestaurant.deliveryFee || "Free Delivery"}</span>
               </div>
-              {currentRestaurant.location && (
+              {(currentRestaurant.address || currentRestaurant.location?.address || currentRestaurant.city) && (
                 <div className="flex items-center gap-2">
                   <MapPin size={20} className="text-gray-400" />
                   <span>
-                    {currentRestaurant.location.address},{" "}
-                    {currentRestaurant.location.city}
+                    {currentRestaurant.address || currentRestaurant.location?.address}
+                    {(currentRestaurant.address || currentRestaurant.location?.address) && currentRestaurant.city
+                      ? `, ${currentRestaurant.city}`
+                      : currentRestaurant.city}
                   </span>
                 </div>
               )}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Phone, Lock, Eye, EyeOff, Bike, ShoppingBag } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -18,6 +18,7 @@ const Register = () => {
     email: "",
     password: "",
     phone: "",
+    role: "customer",
     acceptTerms: false,
   });
   const [loading, setLoading] = useState(false);
@@ -54,9 +55,14 @@ const Register = () => {
       return toast.error("Password is required");
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8) {
       setLoading(false);
-      return toast.error("Password must be at least 6 characters");
+      return toast.error("Password must be at least 8 characters");
+    }
+
+    if (!["customer", "rider"].includes(formData.role)) {
+      setLoading(false);
+      return toast.error("Please select an account type");
     }
 
     if (!formData.acceptTerms) {
@@ -70,6 +76,7 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
+        role: formData.role,
       };
 
       //let responseData;
@@ -80,7 +87,7 @@ const Register = () => {
       ).unwrap();
       // This will be executed if the registration is successful and the thunk is fulfilled and use unwrap to get the actual response data
       toast.success(response.message);
-      navigate("/");
+      navigate(response.user.role === "rider" ? "/rider" : "/");
 
       // This will be executed if the registration is successful and the thunk is fulfilled and use without unwrap to get the actual response data
       // if (registerThunk.fulfilled.match(response)) {
@@ -98,6 +105,7 @@ const Register = () => {
         email: "",
         password: "",
         phone: "",
+        role: "customer",
         acceptTerms: false,
       });
     } catch (error) {
@@ -211,6 +219,50 @@ const Register = () => {
             />
           </div>
         </div>
+
+        {/* Account type */}
+        <fieldset>
+          <legend className="mb-2 block font-medium">Account Type</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              {
+                value: "customer",
+                label: "Customer",
+                description: "Order food from nearby restaurants",
+                icon: ShoppingBag,
+              },
+              {
+                value: "rider",
+                label: "Rider",
+                description: "Deliver orders and earn delivery fees",
+                icon: Bike,
+              },
+            ].map(({ value, label, description, icon: Icon }) => (
+              <label
+                key={value}
+                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${
+                  formData.role === value
+                    ? "border-pink-500 bg-pink-50 ring-2 ring-pink-100"
+                    : "border-gray-300 hover:border-pink-300"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value={value}
+                  checked={formData.role === value}
+                  onChange={handleChange}
+                  className="mt-1 accent-pink-600"
+                />
+                <Icon size={20} className="mt-0.5 text-pink-600" />
+                <span>
+                  <span className="block font-semibold text-gray-800">{label}</span>
+                  <span className="mt-1 block text-xs leading-5 text-gray-500">{description}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         {/* Terms */}
 

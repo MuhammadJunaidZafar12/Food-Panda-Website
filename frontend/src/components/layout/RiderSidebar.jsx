@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Package } from "lucide-react";
+import DashboardNavActions from "./DashboardNavActions";
 
 const navItems = [
   { to: "/rider/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -46,6 +47,8 @@ const RiderSidebar = () => {
             );
           })}
         </nav>
+
+        <DashboardNavActions />
       </aside>
 
       {/* Mobile bottom bar */}
@@ -68,6 +71,7 @@ const RiderSidebar = () => {
             </NavLink>
           );
         })}
+        <DashboardNavActions mobile />
       </nav>
     </>
   );

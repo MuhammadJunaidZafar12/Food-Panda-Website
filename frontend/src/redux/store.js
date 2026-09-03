@@ -6,6 +6,7 @@ import cartReducer from "./cart/cartSlice";
 import orderReducer from "./order/orderSlice";
 import riderReducer from "./rider/riderSlice";
 import locationReducer from "./location/locationSlice";
+import analyticsReducer from "./analytics/analyticsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     order: orderReducer,
     rider: riderReducer,
     location: locationReducer,
+    analytics: analyticsReducer,
   },
 });
