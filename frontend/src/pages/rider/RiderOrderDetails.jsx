@@ -11,8 +11,6 @@ import {
   Loader2,
   MapPin,
   MessageSquare,
-  Navigation,
-  Phone,
   Store,
   User,
   X,
@@ -62,10 +60,6 @@ const WAITING_MESSAGES = {
   accepted: "Waiting for the restaurant to start preparing this order.",
   preparing: "The restaurant is preparing the order. Head over for pickup.",
 };
-
-// Opens the device's map app with turn-by-turn directions.
-const directionsUrl = (latitude, longitude) =>
-  `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
 
 const RiderOrderDetails = () => {
   const { id } = useParams();
@@ -185,7 +179,6 @@ const RiderOrderDetails = () => {
     items = [],
     deliveryAddress,
     deliveryLocation,
-    phone,
     notes,
     paymentMethod,
     total,
@@ -198,9 +191,6 @@ const RiderOrderDetails = () => {
   const isNew = riderStatus === "assigned";
   const nextStep = riderStatus === "accepted" ? NEXT_STEP[orderStatus] : null;
   const NextIcon = nextStep?.icon;
-
-  // Restaurant coordinates come from GeoJSON: [longitude, latitude].
-  const restaurantCoords = restaurant?.location?.coordinates;
 
   return (
     <div className="space-y-6">

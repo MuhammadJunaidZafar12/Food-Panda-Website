@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import {
   Area,
   AreaChart,
@@ -17,11 +16,6 @@ import {
   Clock3,
   DollarSign,
   ShoppingBag,
-  Store,
-  Plus,
-  Package,
-  BarChart3,
-  XCircle,
 } from "lucide-react";
 import { getAnalyticsDashboardThunk } from "../../redux/analytics/analyticsThunk";
 
@@ -59,39 +53,6 @@ const Dashboard = () => {
     ...item,
     revenue: Number(item.revenue) || 0,
   }));
-
-  const cards = [
-    {
-      title: "Create Restaurant",
-      description: "Add a new restaurant to the platform.",
-      icon: Plus,
-      path: "/owner/restaurants/create",
-    },
-    {
-      title: "My Restaurants",
-      description: "View and manage your restaurants.",
-      icon: Store,
-      path: "/owner/restaurants",
-    },
-    {
-      title: "Products",
-      description: "Manage restaurant menu and products.",
-      icon: Package,
-      path: "/owner/products",
-    },
-    {
-      title: "Orders",
-      description: "View customer orders.",
-      icon: ShoppingBag,
-      path: "/owner/orders",
-    },
-    {
-      title: "Analytics",
-      description: "Track restaurant performance.",
-      icon: BarChart3,
-      path: "/owner/dashboard/analytics",
-    },
-  ];
 
   return (
     <div className="space-y-8">

@@ -8,9 +8,9 @@ const Profile = () => {
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
     password: "",
     confirmPassword: "",
   });
@@ -18,16 +18,6 @@ const Profile = () => {
   useEffect(() => {
     dispatch(getProfileThunk());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (!user) return;
-    setFormData((current) => ({
-      ...current,
-      name: user.name || "",
-      email: user.email || "",
-      phone: user.phone || "",
-    }));
-  }, [user]);
 
   const handleChange = (event) => {
     setFormData((current) => ({

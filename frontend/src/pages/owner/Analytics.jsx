@@ -12,7 +12,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import {
@@ -26,7 +25,6 @@ import {
 } from "lucide-react";
 import { getAnalyticsDashboardThunk } from "../../redux/analytics/analyticsThunk";
 import { setTimeRange } from "../../redux/analytics/analyticsSlice";
-import toast from "react-hot-toast";
 
 const COLORS = ["#ec4899", "#f43f5e", "#fbbf24", "#34d399", "#60a5fa", "#a78bfa"];
 
@@ -80,7 +78,7 @@ const Analytics = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="rounded-3xl bg-gradient-to-r from-pink-600 to-rose-500 p-8 text-white shadow-lg">
+      <div className="rounded-3xl bg-linear-to-r from-pink-600 to-rose-500 p-8 text-white shadow-lg">
         <h1 className="text-3xl font-semibold">Analytics Dashboard</h1>
         <p className="mt-2 text-pink-50">
           Track your restaurant performance and business metrics
