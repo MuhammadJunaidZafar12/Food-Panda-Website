@@ -14,6 +14,8 @@ body{
   background: var(--background);
   color: var(--dark);
   font-family: Inter, sans-serif;
+  min-width: 320px;
+  overflow-x: hidden;
 }
 
 *{
@@ -26,4 +28,49 @@ button{
 
 input{
   outline:none;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, input, select, textarea {
+  transition-duration: 180ms;
+  transition-timing-function: ease-out;
+}
+
+button:active, a:active {
+  transform: translateY(1px);
+}
+
+.page-transition {
+  animation: page-enter 280ms ease-out both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 640px) {
+  h1, h2, h3 {
+    overflow-wrap: anywhere;
+  }
 }

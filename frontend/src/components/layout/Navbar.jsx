@@ -80,7 +80,7 @@ const Navbar = () => {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:min-h-20 sm:px-6 sm:py-0">
           {/* Logo & Location */}
           <div className="flex items-center gap-6">
             <Logo variant="navbar" size="sm" />
@@ -92,7 +92,7 @@ const Navbar = () => {
               title="Set Delivery Location / Destination"
             >
               <MapPin size={14} className="text-pink-600 shrink-0" />
-              <span className="max-w-[140px] truncate text-gray-800">
+              <span className="max-w-35 truncate text-gray-800">
                 {hasCoordinates ? (label || city || address || "Selected Location") : "Deliver to: Set Location"}
               </span>
               <span className="rounded-full bg-pink-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
@@ -263,7 +263,7 @@ const Navbar = () => {
                 </span>
               </button>
             )}
-            <button onClick={() => setIsOpen(!isOpen)}>
+            <button type="button" aria-label={isOpen ? "Close menu" : "Open menu"} onClick={() => setIsOpen(!isOpen)} className="rounded-full p-2 transition hover:bg-gray-100">
               {isOpen ? <X size={30} /> : <Menu size={30} />}
             </button>
           </div>
@@ -322,6 +322,16 @@ const Navbar = () => {
                       onClick={() => setIsOpen(false)}
                     >
                       Admin Dashboard
+                    </Link>
+                  )}
+
+                  {user?.role === "owner" && (
+                    <Link
+                      to="/owner/dashboard"
+                      className="py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Owner Dashboard
                     </Link>
                   )}
 

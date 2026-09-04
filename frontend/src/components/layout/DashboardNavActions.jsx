@@ -15,7 +15,7 @@ const DashboardNavActions = ({ mobile = false }) => {
   };
 
   const itemClass = mobile
-    ? "flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-gray-500 transition hover:text-pink-600"
+    ? "flex min-w-[76px] flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-semibold text-gray-500 transition hover:text-pink-600"
     : "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-pink-50 hover:text-pink-600";
 
   return (

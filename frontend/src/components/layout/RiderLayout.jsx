@@ -5,6 +5,7 @@ import { Loader2, MapPin, MapPinOff, Power } from "lucide-react";
 import toast from "react-hot-toast";
 
 import RiderSidebar from "./RiderSidebar";
+import PageTransition from "./PageTransition";
 import {
   getMyRiderStatsThunk,
   updateMyAvailabilityThunk,
@@ -54,11 +55,11 @@ const RiderLayout = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <RiderSidebar />
 
-      <div className="min-w-0 flex-1">
-        <header className="border-b border-gray-200 bg-white px-4 py-4 shadow-sm sm:px-6">
+      <div className="min-w-0 md:ml-72">
+        <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/95 px-4 py-4 shadow-sm backdrop-blur sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
               <h1 className="truncate text-lg font-semibold text-gray-900 sm:text-xl">
@@ -120,7 +121,9 @@ const RiderLayout = () => {
 
         {/* Bottom padding keeps content clear of the mobile navigation bar. */}
         <main className="p-4 pb-24 sm:p-6 md:pb-6">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
     </div>

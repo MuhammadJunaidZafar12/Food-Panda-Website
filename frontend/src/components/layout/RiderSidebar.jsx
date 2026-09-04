@@ -17,7 +17,7 @@ const RiderSidebar = () => {
   return (
     <>
       {/* Desktop / tablet */}
-      <aside className="hidden h-screen w-72 shrink-0 flex-col border-r border-gray-200 bg-white px-5 py-6 shadow-sm md:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 py-6 shadow-sm md:flex">
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-600">
             Rider Panel
@@ -52,7 +52,7 @@ const RiderSidebar = () => {
       </aside>
 
       {/* Mobile bottom bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-gray-200 bg-white shadow-lg md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 flex overflow-x-auto border-t border-gray-200 bg-white shadow-lg md:hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
 
@@ -60,8 +60,8 @@ const RiderSidebar = () => {
             <NavLink
               key={item.to}
               to={item.to}
-              className={({ isActive }) =>
-                `flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
+                className={({ isActive }) =>
+                  `flex min-w-[92px] flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
                   isActive ? "text-pink-600" : "text-gray-500"
                 }`
               }
