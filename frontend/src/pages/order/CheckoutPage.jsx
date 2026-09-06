@@ -315,9 +315,19 @@ const CheckoutPage = () => {
             <OrderSummary
               subtotal={cart.subtotal}
               deliveryFee={cart.deliveryFee}
-              tax={cart.grandTotal - cart.subtotal - cart.deliveryFee} // calculated server-equivalent tax
+              tax={cart.tax !== undefined ? cart.tax : Math.round(cart.subtotal * 0.05 * 100) / 100}
               discount={0}
-              total={cart.grandTotal}
+              total={
+                cart.grandTotal ??
+                Math.round(
+                  (cart.subtotal +
+                    (cart.deliveryFee || 0) +
+                    (cart.tax !== undefined
+                      ? cart.tax
+                      : Math.round(cart.subtotal * 0.05 * 100) / 100)) *
+                    100
+                ) / 100
+              }
             />
 
             {/* Submit Button */}

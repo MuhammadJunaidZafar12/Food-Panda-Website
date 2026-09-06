@@ -222,20 +222,40 @@ const CartDrawer = ({ isOpen, onClose }) => {
             <div className="cart-footer">
               <div className="cart-summary-row">
                 <span>Subtotal</span>
-                <span>Rs. {cart.subtotal}</span>
+                <span>Rs. {Number(cart.subtotal ?? 0).toLocaleString()}</span>
               </div>
               <div className="cart-summary-row">
                 <span>Delivery Fee</span>
                 <span>
                   {cart.deliveryFee > 0
-                    ? `Rs. ${cart.deliveryFee}`
+                    ? `Rs. ${Number(cart.deliveryFee).toLocaleString()}`
                     : "Free"}
+                </span>
+              </div>
+              <div className="cart-summary-row">
+                <span>GST (5%)</span>
+                <span>
+                  Rs. {Number(
+                    cart.tax !== undefined
+                      ? cart.tax
+                      : Math.round(cart.subtotal * 0.05 * 100) / 100
+                  ).toLocaleString()}
                 </span>
               </div>
               <div className="cart-summary-row grand-total">
                 <span>Grand Total</span>
                 <span className="amount">
-                  Rs. {cart.grandTotal}
+                  Rs. {Number(
+                    cart.grandTotal ??
+                      Math.round(
+                        (cart.subtotal +
+                          (cart.deliveryFee || 0) +
+                          (cart.tax !== undefined
+                            ? cart.tax
+                            : Math.round(cart.subtotal * 0.05 * 100) / 100)) *
+                          100
+                      ) / 100
+                  ).toLocaleString()}
                 </span>
               </div>
 

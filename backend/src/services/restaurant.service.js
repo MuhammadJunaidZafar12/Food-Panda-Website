@@ -132,15 +132,27 @@ export const getRestaurant = async (id) => {
   return restaurant;
 };
 
-export const getPublicRestaurantByIdService = async (id) => {
-  const restaurant = await Restaurant.findOne({
-    _id: id,
-    status: "approved",
-    isActive: true,
-  });
+export const getPublicRestaurantByIdService = async (id, user = null) => {
+  const restaurant = await Restaurant.findById(id).populate(
+    "owner",
+    "name email phone"
+  );
 
   if (!restaurant) {
-    throw new Error("Restaurant not found or not approved.");
+    throw new Error("Restaurant not found.");
+  }
+
+  const isOwner =
+    user &&
+    restaurant.owner &&
+    (restaurant.owner._id?.toString() === user._id?.toString() ||
+      restaurant.owner.toString() === user._id?.toString());
+  const isAdmin = user && user.role === "admin";
+
+  if (restaurant.status !== "approved" || !restaurant.isActive) {
+    if (!isAdmin && !isOwner) {
+      throw new Error("Restaurant not found or not approved.");
+    }
   }
 
   return restaurant;

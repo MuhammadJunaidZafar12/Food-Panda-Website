@@ -567,24 +567,24 @@ const AdminOrdersPage = () => {
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span className="font-bold text-gray-900">
-                      Rs. {selectedOrder.subtotal.toLocaleString()}
+                      Rs. {Number(selectedOrder.subtotal ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Delivery Fee</span>
                     <span className="font-bold text-gray-900">
-                      Rs. {selectedOrder.deliveryFee.toLocaleString()}
+                      Rs. {Number(selectedOrder.deliveryFee ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>GST (5%)</span>
                     <span className="font-bold text-gray-900">
-                      Rs. {selectedOrder.tax.toLocaleString()}
+                      Rs. {Number(selectedOrder.tax ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between text-base font-extrabold text-pink-600 border-t border-gray-200 pt-3 mt-1">
                     <span>Total Amount</span>
-                    <span>Rs. {selectedOrder.total.toLocaleString()}</span>
+                    <span>Rs. {Number(selectedOrder.total ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
               </div>

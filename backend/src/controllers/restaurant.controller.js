@@ -22,7 +22,10 @@ export const getPublicRestaurantById = async (
   next
 ) => {
   try {
-    const restaurant = await getPublicRestaurantByIdService(req.params.id);
+    const restaurant = await getPublicRestaurantByIdService(
+      req.params.id,
+      req.user
+    );
 
     res.status(200).json({
       success: true,

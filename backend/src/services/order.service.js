@@ -140,7 +140,7 @@ export const createOrderService = async (userId, orderData) => {
   const deliveryFee = restaurant.deliveryFee || 0;
   const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
   const discount = 0; // placeholder for future coupon system
-  const total = subtotal + deliveryFee + tax - discount;
+  const total = Math.round((subtotal + deliveryFee + tax - discount) * 100) / 100;
 
   // 5. Check minimum order
   if (restaurant.minimumOrder > 0 && subtotal < restaurant.minimumOrder) {

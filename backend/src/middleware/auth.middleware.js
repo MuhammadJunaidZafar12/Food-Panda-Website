@@ -85,3 +85,28 @@ export const authorize = (...roles) => {
     next();
   };
 };
+
+export const optionalAuth = async (req, res, next) => {
+  try {
+    let token;
+    if (req.cookies?.token) {
+      token = req.cookies.token;
+    } else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer ")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id);
+      if (user && !user.isBlocked) {
+        req.user = user;
+      }
+    }
+  } catch {
+    // Ignore invalid token for optional auth
+  }
+  next();
+};

@@ -2,6 +2,9 @@ import Cart from "../models/cart.model.js";
 import Product from "../models/product.model.js";
 import Restaurant from "../models/restaurant.model.js";
 
+// ─── Tax rate (flat 5%) ──────────────────────────────────────────────
+const TAX_RATE = 0.05;
+
 // ─── Helper: Build cart response with calculated totals ──────────────
 const buildCartResponse = async (cart) => {
   await cart.populate("items.product", "name image price isAvailable");
@@ -13,7 +16,8 @@ const buildCartResponse = async (cart) => {
   );
 
   const deliveryFee = cart.restaurant?.deliveryFee || 0;
-  const grandTotal = subtotal + deliveryFee;
+  const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
+  const grandTotal = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
 
   return {
     _id: cart._id,
@@ -28,6 +32,7 @@ const buildCartResponse = async (cart) => {
     })),
     subtotal,
     deliveryFee,
+    tax,
     grandTotal,
     totalItems: cart.items.reduce((sum, item) => sum + item.quantity, 0),
   };
@@ -49,6 +54,7 @@ export const getCart = async (req, res) => {
           items: [],
           subtotal: 0,
           deliveryFee: 0,
+          tax: 0,
           grandTotal: 0,
           totalItems: 0,
         },
@@ -307,6 +313,7 @@ export const clearCart = async (req, res) => {
           items: [],
           subtotal: 0,
           deliveryFee: 0,
+          tax: 0,
           grandTotal: 0,
           totalItems: 0,
         },
@@ -329,6 +336,7 @@ export const clearCart = async (req, res) => {
         items: [],
         subtotal: 0,
         deliveryFee: 0,
+        tax: 0,
         grandTotal: 0,
         totalItems: 0,
       },

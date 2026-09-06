@@ -13,7 +13,12 @@ import {
   getAdminDashboardStats,
   getPublicRestaurantById,
 } from "../controllers/restaurant.controller.js";
-import { protect, authorizeOwner, authorize } from "../middleware/auth.middleware.js";
+import {
+  protect,
+  authorizeOwner,
+  authorize,
+  optionalAuth,
+} from "../middleware/auth.middleware.js";
 import upload from "../middleware/upload.middleware.js";
 import { Router } from "express";
 import { getOwnerAnalyticsDashboard } from "../controllers/analytics.controller.js";
@@ -63,7 +68,7 @@ router.get(
 );
 
 router.get("/", getRestaurants);
-router.get("/public/:id", getPublicRestaurantById);
+router.get("/public/:id", optionalAuth, getPublicRestaurantById);
 router.get("/my-restaurants", protect, authorizeOwner, getMyRestaurants);
 
 router.get("/:id", protect, getRestaurantById);

@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
 import {
   Alert,
   Box,
@@ -54,6 +55,18 @@ const RestaurantForm = ({
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
+    if (files && files[0]) {
+      const file = files[0];
+      if (!file.type.startsWith("image/")) {
+        toast.error("Only image files are allowed for logo/banner.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image file size should be less than 5MB.");
+        return;
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,
@@ -78,10 +91,60 @@ const RestaurantForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Latitude/longitude are read-only inputs, so the browser skips their
-    // `required` check — the pin has to be validated here instead.
+    // Detailed field validation with informative toast notifications
+    if (!formData.name || !formData.name.trim()) {
+      toast.error("Please enter the restaurant name.");
+      return;
+    }
+
+    if (!formData.category || !formData.category.trim()) {
+      toast.error("Please select a restaurant category.");
+      return;
+    }
+
+    if (!formData.phone || !formData.phone.trim()) {
+      toast.error("Please enter a contact phone number.");
+      return;
+    }
+
+    if (
+      formData.email &&
+      formData.email.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+    ) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (!formData.address || !formData.address.trim()) {
+      toast.error("Please enter the complete restaurant address.");
+      return;
+    }
+
+    if (!formData.city || !formData.city.trim()) {
+      toast.error("Please enter the city.");
+      return;
+    }
+
+    if (Number(formData.deliveryFee) < 0) {
+      toast.error("Delivery fee cannot be negative.");
+      return;
+    }
+
+    if (Number(formData.minimumOrder) < 0) {
+      toast.error("Minimum order cannot be negative.");
+      return;
+    }
+
+    if (Number(formData.deliveryRadius) <= 0) {
+      toast.error("Delivery radius must be greater than 0 km.");
+      return;
+    }
+
+    // Latitude/longitude validation
     if (!isValidCoordinate({ latitude: formData.latitude, longitude: formData.longitude })) {
       setLocationError("Please pick the restaurant location on the map.");
+      toast.error("Please mark your restaurant location on the map.");
       return;
     }
 

@@ -9,7 +9,10 @@ import {
   getRestaurantByIdThunk,
   updateRestaurantThunk,
 } from "../../redux/restaurant/restaurantThunk";
-import { resetRestaurantSuccess } from "../../redux/restaurant/restaurantSlice";
+import {
+  clearRestaurantError,
+  resetRestaurantSuccess,
+} from "../../redux/restaurant/restaurantSlice";
 
 const EditRestaurant = () => {
   const { id } = useParams();
@@ -26,6 +29,7 @@ const EditRestaurant = () => {
   } = useSelector((state) => state.restaurant);
 
   useEffect(() => {
+    dispatch(clearRestaurantError());
     dispatch(resetRestaurantSuccess());
     dispatch(getRestaurantByIdThunk(id));
   }, [dispatch, id]);
@@ -37,6 +41,13 @@ const EditRestaurant = () => {
       navigate("/owner/restaurants");
     }
   }, [success, navigate, dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearRestaurantError());
+    }
+  }, [error, dispatch]);
 
   const handleSubmit = (formData) => {
     dispatch(

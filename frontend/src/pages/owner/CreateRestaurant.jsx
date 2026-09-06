@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 import RestaurantForm from "../../components/restaurant/RestaurantForm";
 import { createRestaurantThunk } from "../../redux/restaurant/restaurantThunk";
+import {
+  clearRestaurantError,
+  resetRestaurantSuccess,
+} from "../../redux/restaurant/restaurantSlice";
 import toast from "react-hot-toast";
 
 const CreateRestaurant = () => {
@@ -14,16 +18,29 @@ const CreateRestaurant = () => {
     (state) => state.restaurant
   );
 
+  useEffect(() => {
+    dispatch(clearRestaurantError());
+    dispatch(resetRestaurantSuccess());
+  }, [dispatch]);
+
   const handleSubmit = (formData) => {
     dispatch(createRestaurantThunk(formData));
   };
 
   useEffect(() => {
     if (success) {
+      toast.success("Restaurant submitted for approval successfully!");
+      dispatch(resetRestaurantSuccess());
       navigate("/owner/restaurants");
-      toast.success("Restaurant Added Successfully")
     }
-  }, [success, navigate]);
+  }, [success, navigate, dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearRestaurantError());
+    }
+  }, [error, dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
