@@ -15,6 +15,7 @@ const connect = () =>
     family: 4,
   }); 
 
+  console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 const connectDB = async () => {
   const mongoUri = process.env.MONGO_URI;
 
