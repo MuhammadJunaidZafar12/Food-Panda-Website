@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-dotenv.config();
 
 import http from "http";
 
@@ -7,11 +6,12 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { initSocket } from "./socket.js";
 
+dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    await connectDB();
+    await connectDB(); 
 
     // Express is wrapped in a raw HTTP server so Socket.IO can share the port.
     const server = http.createServer(app);

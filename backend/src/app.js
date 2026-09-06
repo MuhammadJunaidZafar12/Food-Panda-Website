@@ -8,11 +8,13 @@ import cartRoutes from "./routes/cart.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import riderRoutes from "./routes/rider.routes.js";
 const app = express();
+import dotenv from "dotenv";
+dotenv.config();
 
 // Middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
