@@ -303,7 +303,7 @@ const Restaurants = () => {
             })}
 
             {/* Only deliverable checkbox */}
-            <label className="ml-auto flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">
+            <label className="flex w-full items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none sm:ml-auto sm:w-auto">
               <input
                 type="checkbox"
                 checked={onlyDeliverable}

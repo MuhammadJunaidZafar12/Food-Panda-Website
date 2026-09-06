@@ -7,7 +7,7 @@ import Categories from "./Categories";
 import FeaturedRestaurants from "./FeaturedRestaurants";
 import Offers from "./Offers";
 import DownloadApp from "./DownloadApp";
-import AboutUs from "./AboutUs";
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -36,8 +36,7 @@ const Home = () => {
       <Categories />
       <FeaturedRestaurants />
       <Offers />
-      <DownloadApp  />
-      <AboutUs />
+      <DownloadApp />
     </div>
   );
 };

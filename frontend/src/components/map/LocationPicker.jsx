@@ -21,7 +21,12 @@ import { pickerIcon } from "./mapIcons";
  * address, or tapping "Use my location". Every change is reported through
  * `onChange` as:
  *
- *   { latitude, longitude, address, city, postalCode }
+ *   { latitude, longitude, address, city, postalCode, resolving }
+ *
+ * A pick fires `onChange` twice: once straight away with the coordinates and
+ * `resolving: true` so the pin moves without waiting on the network, then again
+ * with the address and city filled in. Consumers that mirror the address into
+ * their own fields should leave them alone while `resolving` is true.
  *
  * The component is fully controlled — it renders whatever `value` holds.
  */
@@ -90,6 +95,7 @@ const LocationPicker = ({
           address: known.address,
           city: known.city || "",
           postalCode: known.postalCode || "",
+          resolving: false,
         });
         return;
       }
@@ -97,7 +103,14 @@ const LocationPicker = ({
       const requestId = ++requestRef.current;
 
       // Move the pin immediately, then fill in the address once it arrives.
-      onChange?.({ latitude, longitude, address: "", city: "", postalCode: "" });
+      onChange?.({
+        latitude,
+        longitude,
+        address: "",
+        city: "",
+        postalCode: "",
+        resolving: true,
+      });
       setResolving(true);
 
       const info = await reverseGeocode(latitude, longitude);
@@ -105,7 +118,7 @@ const LocationPicker = ({
       // A newer pick happened while we were waiting — discard this result.
       if (requestId !== requestRef.current) return;
 
-      onChange?.({ latitude, longitude, ...info });
+      onChange?.({ latitude, longitude, ...info, resolving: false });
       setResolving(false);
     },
     [onChange]

@@ -37,6 +37,12 @@ import RiderDashboard from "../pages/rider/RiderDashboard";
 import RiderOrders from "../pages/rider/RiderOrders";
 import RiderOrderDetails from "../pages/rider/RiderOrderDetails";
 import Analytics from "../pages/owner/Analytics";
+import AboutPage from "../pages/static/AboutPage";
+import CareersPage from "../pages/static/CareersPage";
+import ContactPage from "../pages/static/ContactPage";
+import HelpCenterPage from "../pages/static/HelpCenterPage";
+import PrivacyPolicyPage from "../pages/static/PrivacyPolicyPage";
+import TermsPage from "../pages/static/TermsPage";
 
 
 const AppRoutes = () => {
@@ -59,6 +65,12 @@ const AppRoutes = () => {
           <Route path="/orders/:id/confirmation" element={<OrderConfirmation />} />
           <Route path="/orders/:id/track" element={<OrderTracking />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/careers" element={<CareersPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/help" element={<HelpCenterPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
         </Route>
 
         <Route

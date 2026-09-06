@@ -18,6 +18,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { getAnalyticsDashboardThunk } from "../../redux/analytics/analyticsThunk";
+import DashboardStatCard from "../../components/ui/DashboardStatCard";
 
 const statusLabels = {
   pending: "Pending",
@@ -56,74 +57,70 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold">Owner Dashboard</h1>
+      <div className="animate-fade-in-up">
+        <h1 className="text-3xl font-black text-gray-900 sm:text-4xl">
+          Owner Dashboard
+        </h1>
         <p className="mt-2 text-gray-500">
           Monitor your restaurants, orders, and revenue at a glance.
         </p>
       </div>
 
-      {/* <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {cards.map((card) => {
-          const Icon = card.icon;
-
-          return (
-            <Link
-              key={card.title}
-              to={card.path}
-              className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-100">
-                <Icon size={28} className="text-pink-600" />
-              </div>
-
-              <h2 className="text-xl font-semibold text-gray-800">{card.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-500">{card.description}</p>
-            </Link>
-          );
-        })}
-      </div> */}
-
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
           {error}
         </div>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <ShoppingBag className="mb-3 text-blue-600" size={35} />
-          <h2 className="text-3xl font-bold">{loading ? "..." : metrics.totalOrders || 0}</h2>
-          <p className="text-gray-500">Orders this week</p>
-        </div>
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <DollarSign className="mb-3 text-green-600" size={35} />
-          <h2 className="text-3xl font-bold">
-            {loading ? "..." : `Rs ${Number(metrics.totalRevenue || 0).toLocaleString()}`}
-          </h2>
-            <p className="text-gray-500">Delivered revenue this week</p>
-        </div>
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <CheckCircle2 className="mb-3 text-emerald-600" size={35} />
-          <h2 className="text-3xl font-bold">{loading ? "..." : metrics.completedOrders || 0}</h2>
-          <p className="text-gray-500">Completed orders</p>
-        </div>
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <Clock3 className="mb-3 text-amber-500" size={35} />
-          <h2 className="text-3xl font-bold">
-            {loading ? "..." : `${Number(metrics.completionRate || 0).toFixed(1)}%`}
-          </h2>
-          <p className="text-gray-500">Completion rate</p>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <DashboardStatCard
+          icon={ShoppingBag}
+          label="Orders this week"
+          value={loading ? "..." : metrics.totalOrders || 0}
+          tone="blue"
+          delay={0}
+        />
+        <DashboardStatCard
+          icon={DollarSign}
+          label="Delivered revenue this week"
+          value={
+            loading
+              ? "..."
+              : `Rs ${Number(metrics.totalRevenue || 0).toLocaleString()}`
+          }
+          tone="green"
+          delay={80}
+        />
+        <DashboardStatCard
+          icon={CheckCircle2}
+          label="Completed orders"
+          value={loading ? "..." : metrics.completedOrders || 0}
+          tone="emerald"
+          delay={160}
+        />
+        <DashboardStatCard
+          icon={Clock3}
+          label="Completion rate"
+          value={
+            loading
+              ? "..."
+              : `${Number(metrics.completionRate || 0).toFixed(1)}%`
+          }
+          tone="amber"
+          delay={240}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white p-6 shadow">
+        <div
+          className="animate-fade-in-up rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6"
+          style={{ animationDelay: "120ms" }}
+        >
           <div className="mb-6">
-            <h2 className="text-2xl font-bold">Revenue Trend</h2>
+            <h2 className="text-xl font-bold sm:text-2xl">Revenue Trend</h2>
             <p className="text-sm text-gray-500">Revenue during the last 7 days</p>
           </div>
-          <div className="h-80">
+          <div className="h-72 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueTrend}>
                 <defs>
@@ -150,16 +147,26 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow">
+        <div
+          className="animate-fade-in-up rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6"
+          style={{ animationDelay: "200ms" }}
+        >
           <div className="mb-6">
-            <h2 className="text-2xl font-bold">Order Status</h2>
+            <h2 className="text-xl font-bold sm:text-2xl">Order Status</h2>
             <p className="text-sm text-gray-500">Orders grouped by their current status</p>
           </div>
-          <div className="h-80">
+          <div className="h-72 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statusTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="status" angle={-20} textAnchor="end" height={60} tickLine={false} axisLine={false} />
+                <XAxis
+                  dataKey="status"
+                  angle={-20}
+                  textAnchor="end"
+                  height={60}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
                 <Tooltip />
                 <Bar dataKey="orders" fill="#2563eb" radius={[8, 8, 0, 0]} />
@@ -169,17 +176,28 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow">
+      <div
+        className="animate-fade-in-up rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6"
+        style={{ animationDelay: "280ms" }}
+      >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold">Top Products</h2>
-          <p className="text-sm text-gray-500">Best-selling products during the last 7 days</p>
+          <h2 className="text-xl font-bold sm:text-2xl">Top Products</h2>
+          <p className="text-sm text-gray-500">
+            Best-selling products during the last 7 days
+          </p>
         </div>
-        <div className="h-80">
+        <div className="h-72 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topProducts} layout="vertical" margin={{ left: 20, right: 20 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" tickLine={false} axisLine={false} />
-              <YAxis type="category" dataKey="name" width={110} tickLine={false} axisLine={false} />
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={110}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip formatter={(value) => [`Rs ${value}`, "Revenue"]} />
               <Bar dataKey="revenue" fill="#f43f5e" radius={[0, 8, 8, 0]} />
             </BarChart>

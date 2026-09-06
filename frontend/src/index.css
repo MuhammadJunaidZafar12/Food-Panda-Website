@@ -47,6 +47,30 @@ button:active, a:active {
   animation: page-enter 280ms ease-out both;
 }
 
+.animate-fade-in-up {
+  animation: fade-in-up 500ms ease-out both;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;

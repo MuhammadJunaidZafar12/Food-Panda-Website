@@ -90,16 +90,16 @@ const Hero = () => {
 
   return (
     <section className="bg-gradient-to-r from-pink-50 to-white">
-      <div className="mx-auto flex min-h-[500px] max-w-7xl flex-col items-center justify-between gap-12 px-6 py-16 lg:flex-row">
+      <div className="mx-auto flex min-h-[420px] max-w-7xl flex-col items-center justify-between gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:flex-row lg:gap-12">
 
         {/* Left */}
-        <div className="max-w-xl">
+        <div className="w-full max-w-xl">
 
           <span className="rounded-full bg-pink-100 px-4 py-2 text-sm font-medium text-pink-600">
             🍔 Pakistan's Favourite Food Delivery
           </span>
 
-          <h1 className="mt-6 text-5xl font-extrabold leading-tight text-gray-900">
+          <h1 className="mt-6 text-4xl font-extrabold leading-tight text-gray-900 sm:text-5xl">
             Enjoy your favourite food,
             <span className="text-pink-600"> anytime.</span>
           </h1>
@@ -189,7 +189,7 @@ const Hero = () => {
           </div>
 
           {/* Stats */}
-          <div className="mt-10 flex gap-10">
+          <div className="mt-10 flex flex-wrap gap-6 sm:gap-10">
 
             <div>
               <h2 className="text-3xl font-bold text-pink-600">
@@ -226,11 +226,12 @@ const Hero = () => {
         </div>
 
         {/* Right */}
-        <div className="flex justify-center">
-
-          <img src={heroImage} alt="Random" className="max-w-2xl drop-shadow-2xl" />
-            
-
+        <div className="flex w-full justify-center lg:w-auto">
+          <img
+            src={heroImage}
+            alt="Delicious food delivery"
+            className="w-full max-w-md rounded-3xl drop-shadow-2xl sm:max-w-lg lg:max-w-2xl"
+          />
         </div>
 
       </div>

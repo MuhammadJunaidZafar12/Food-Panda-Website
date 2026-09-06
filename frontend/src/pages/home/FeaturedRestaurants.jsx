@@ -23,11 +23,11 @@ const FeaturedRestaurants = () => {
   const featured = restaurants.slice(0, 4);
 
   return (
-    <section className="bg-gray-50 py-16">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="bg-gray-50 py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
 
         <div className="mb-10">
-          <h2 className="text-4xl font-bold">
+          <h2 className="text-3xl font-bold sm:text-4xl">
             Featured Restaurants
           </h2>
 

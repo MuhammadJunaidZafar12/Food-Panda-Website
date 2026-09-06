@@ -10,12 +10,12 @@ import {
 import DashboardNavActions from "./DashboardNavActions";
 
 const navItems = [
-  { to: "/owner", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/owner/restaurants", label: "My Restaurants", icon: Store },
-  { to: "/owner/restaurants/create", label: "Create Restaurant", icon: PlusCircle },
-  { to: "/owner/products", label: "Products", icon: Package },
-  { to: "/owner/orders", label: "Orders", icon: ShoppingBag },
-  { to: "/owner/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/owner", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/owner/restaurants", label: "My Restaurants", icon: Store, end: true },
+  { to: "/owner/restaurants/create", label: "Create Restaurant", icon: PlusCircle, end: true },
+  { to: "/owner/products", label: "Products", icon: Package, end: true },
+  { to: "/owner/orders", label: "Orders", icon: ShoppingBag, end: true },
+  { to: "/owner/dashboard/analytics", label: "Analytics", icon: BarChart3, end: true },
 ];
 
 function Sidebar() {
@@ -37,6 +37,7 @@ function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.end}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                   isActive

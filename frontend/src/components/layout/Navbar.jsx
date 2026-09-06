@@ -285,14 +285,6 @@ const Navbar = () => {
                 Restaurants
               </NavLink>
 
-              <NavLink
-                to="/offers"
-                className="py-3"
-                onClick={() => setIsOpen(false)}
-              >
-                Offers
-              </NavLink>
-
               <hr className="my-3" />
 
               {isAuthenticated ? (

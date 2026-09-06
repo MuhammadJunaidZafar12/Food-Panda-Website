@@ -1,4 +1,17 @@
 import { useCallback, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 import LocationPicker from "../map/LocationPicker";
 import { isValidCoordinate } from "../../services/location.service";
@@ -55,8 +68,10 @@ const RestaurantForm = ({
       ...prev,
       latitude: picked.latitude,
       longitude: picked.longitude,
-      address: picked.address || "",
-      city: picked.city || "",
+      // While the lookup is still running the picker sends blanks — hold on to
+      // what is on screen instead of emptying the two fields and refilling them.
+      address: picked.resolving ? prev.address : picked.address || "",
+      city: picked.resolving ? prev.city : picked.city || "",
     }));
   }, []);
 
@@ -110,179 +125,36 @@ const RestaurantForm = ({
     <form
       key={formKey}
       onSubmit={handleSubmit}
-      className="space-y-6 rounded-2xl bg-white p-8 shadow"
+      noValidate
     >
-      <h2 className="text-3xl font-bold">Restaurant Information</h2>
+      <Paper elevation={0} sx={{ p: { xs: 2, sm: 4 }, border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+        <Stack spacing={3}>
+          <Typography variant="h5" fontWeight={700}>Restaurant Information</Typography>
 
-      {/* Restaurant Name */}
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 2 }}>
+            <TextField label="Restaurant Name" name="name" value={formData.name} onChange={handleChange} required fullWidth />
+            <FormControl fullWidth required>
+              <InputLabel id="restaurant-category-label">Category</InputLabel>
+              <Select labelId="restaurant-category-label" label="Category" name="category" value={formData.category} onChange={handleChange}>
+                <MenuItem value="">Select Category</MenuItem>
+                {["Fast Food", "Pizza", "Burger", "BBQ", "Chinese", "Desi", "Cafe", "Bakery"].map((category) => <MenuItem key={category} value={category}>{category}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <TextField label="Phone" name="phone" value={formData.phone} onChange={handleChange} required fullWidth />
+            <TextField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} fullWidth />
+            <TextField label="Address" name="address" value={formData.address} onChange={handleChange} required fullWidth />
+            <TextField label="City" name="city" value={formData.city} onChange={handleChange} required fullWidth />
+            <TextField label="Description" name="description" value={formData.description} onChange={handleChange} multiline rows={4} fullWidth sx={{ gridColumn: { md: "1 / -1" } }} />
+            <TextField label="Opening Hours" name="openingHours" placeholder="09:00 AM - 11:00 PM" value={formData.openingHours} onChange={handleChange} fullWidth sx={{ gridColumn: { md: "1 / -1" } }} />
+          </Box>
 
-      <div>
-        <label className="mb-2 block font-medium">Restaurant Name</label>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" }, gap: 2 }}>
+            <TextField label="Delivery Fee" name="deliveryFee" type="number" value={formData.deliveryFee} onChange={handleChange} fullWidth inputProps={{ min: 0 }} />
+            <TextField label="Minimum Order" name="minimumOrder" type="number" value={formData.minimumOrder} onChange={handleChange} fullWidth inputProps={{ min: 0 }} />
+            <TextField label="Delivery Radius" name="deliveryRadius" type="number" value={formData.deliveryRadius} onChange={handleChange} fullWidth inputProps={{ min: 1 }} />
+          </Box>
 
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full rounded-lg border p-3 outline-none focus:border-pink-500"
-        />
-      </div>
-
-      {/* Category */}
-      <div>
-        <label className="mb-2 block font-medium">Category</label>
-
-        <select
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          required
-          className="w-full rounded-lg border p-3 outline-none focus:border-pink-500"
-        >
-          <option value="">Select Category</option>
-
-          <option>Fast Food</option>
-          <option>Pizza</option>
-          <option>Burger</option>
-          <option>BBQ</option>
-          <option>Chinese</option>
-          <option>Desi</option>
-          <option>Cafe</option>
-          <option>Bakery</option>
-        </select>
-      </div>
-
-      {/* Phone */}
-
-      <div>
-        <label className="mb-2 block font-medium">Phone</label>
-
-        <input
-          type="text"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* Email */}
-
-      <div>
-        <label className="mb-2 block font-medium">Email</label>
-
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* Address */}
-
-      <div>
-        <label className="mb-2 block font-medium">Address</label>
-
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          required
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* City */}
-      <div>
-        <label className="mb-2 block font-medium">City</label>
-
-        <input
-          type="text"
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          required
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* Description */}
-
-      <div>
-        <label className="mb-2 block font-medium">Description</label>
-
-        <textarea
-          rows="4"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* Opening Hours */}
-
-      <div>
-        <label className="mb-2 block font-medium">Opening Hours</label>
-
-        <input
-          type="text"
-          name="openingHours"
-          placeholder="09:00 AM - 11:00 PM"
-          value={formData.openingHours}
-          onChange={handleChange}
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* Numbers */}
-
-      <div className="grid gap-5 md:grid-cols-3">
-        <div>
-          <label className="mb-2 block font-medium">Delivery Fee</label>
-
-          <input
-            type="number"
-            name="deliveryFee"
-            value={formData.deliveryFee}
-            onChange={handleChange}
-            className="w-full rounded-lg border p-3"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block font-medium">Minimum Order</label>
-
-          <input
-            type="number"
-            name="minimumOrder"
-            value={formData.minimumOrder}
-            onChange={handleChange}
-            className="w-full rounded-lg border p-3"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block font-medium">Delivery Radius</label>
-
-          <input
-            type="number"
-            name="deliveryRadius"
-            value={formData.deliveryRadius}
-            onChange={handleChange}
-            className="w-full rounded-lg border p-3"
-          />
-        </div>
-      </div>
-
-      {/* Coordinates */}
-
-      <div className="space-y-4 rounded-xl border border-gray-200 p-4">
+          <Box sx={{ p: { xs: 1.5, sm: 2 }, border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
         <LocationPicker
           value={{
             latitude: formData.latitude,
@@ -297,78 +169,31 @@ const RestaurantForm = ({
         />
 
         {locationError && (
-          <p className="text-sm font-medium text-red-600">{locationError}</p>
+          <Alert severity="error" sx={{ mt: 2 }}>{locationError}</Alert>
         )}
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block font-medium">Latitude</label>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 2, mt: 2 }}>
+          <TextField label="Latitude" type="number" name="latitude" value={formData.latitude} onChange={handleChange} inputProps={{ step: "any" }} InputProps={{ readOnly: true }} required fullWidth />
+          <TextField label="Longitude" type="number" name="longitude" value={formData.longitude} onChange={handleChange} inputProps={{ step: "any" }} InputProps={{ readOnly: true }} required fullWidth />
+        </Box>
+          </Box>
 
-            <input
-              type="number"
-              step="any"
-              name="latitude"
-              value={formData.latitude}
-              onChange={handleChange}
-              readOnly
-              required
-              placeholder="Pick on the map"
-              className="w-full rounded-lg border bg-gray-50 p-3 text-gray-600"
-            />
-          </div>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <Button component="label" variant="outlined" fullWidth>
+              {formData.logo instanceof File ? formData.logo.name : "Choose Logo"}
+              <input hidden type="file" accept="image/*" name="logo" onChange={handleChange} />
+            </Button>
+            <Button component="label" variant="outlined" fullWidth>
+              {formData.banner instanceof File ? formData.banner.name : "Choose Banner"}
+              <input hidden type="file" accept="image/*" name="banner" onChange={handleChange} />
+            </Button>
+          </Stack>
 
-          <div>
-            <label className="mb-2 block font-medium">Longitude</label>
-
-            <input
-              type="number"
-              step="any"
-              name="longitude"
-              value={formData.longitude}
-              onChange={handleChange}
-              readOnly
-              required
-              placeholder="Pick on the map"
-              className="w-full rounded-lg border bg-gray-50 p-3 text-gray-600"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Logo */}
-
-      <div>
-        <label className="mb-2 block font-medium">Logo URL</label>
-
-        <input
-          type="file"
-          accept="image/*"
-          name="logo"
-          onChange={handleChange}
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      {/* Banner */}
-
-      <div>
-        <label className="mb-2 block font-medium">Banner URL</label>
-
-        <input
-          type="file"
-          accept="image/*"
-          name="banner"
-          onChange={handleChange}
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      <button
-        disabled={loading}
-        className="w-full rounded-xl bg-pink-600 py-4 font-semibold text-white transition hover:bg-pink-700 disabled:opacity-50"
-      >
-        {loading ? "Saving..." : submitLabel || (mode === "edit" ? "Save Changes" : "Create Restaurant")}
-      </button>
+          <Button type="submit" variant="contained" size="large" disabled={loading} fullWidth sx={{ bgcolor: "#E21B70", "&:hover": { bgcolor: "#C2185B" } }}>
+            {loading ? "Saving..." : submitLabel || (mode === "edit" ? "Save Changes" : "Create Restaurant")}
+          </Button>
+        </Stack>
+      </Paper>
     </form>
   );
 };

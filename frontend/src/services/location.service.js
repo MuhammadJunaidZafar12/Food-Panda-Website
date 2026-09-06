@@ -12,16 +12,14 @@
  * instance, which attaches our auth headers and points at our own API.
  */
 
+import { resolveCity } from "../utils/city";
+
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org";
 const OSRM_URL = "https://router.project-osrm.org";
 
-const getCity = (details = {}) =>
-  details.city ||
-  details.town ||
-  details.village ||
-  details.municipality ||
-  details.city_district ||
-  "";
+// Nominatim otherwise answers in the browser's language, which returns place
+// names in Urdu script for local users and breaks city matching.
+const LANGUAGE = "en";
 
 // Fallback map centre (Karachi) used when we have nothing else to show.
 export const DEFAULT_CENTER = { latitude: 24.8607, longitude: 67.0011 };
@@ -125,6 +123,7 @@ export const reverseGeocode = async (latitude, longitude) => {
       lon: longitude,
       zoom: "18",
       addressdetails: "1",
+      "accept-language": LANGUAGE,
     });
 
     const response = await fetch(`${NOMINATIM_URL}/reverse?${params}`, {
@@ -138,7 +137,7 @@ export const reverseGeocode = async (latitude, longitude) => {
 
     return {
       address: data.display_name || fallback.address,
-      city: getCity(details),
+      city: resolveCity(details),
       postalCode: details.postcode || "",
     };
   } catch {
@@ -159,6 +158,7 @@ export const searchAddress = async (query, limit = 5) => {
       q: query.trim(),
       limit: String(limit),
       addressdetails: "1",
+      "accept-language": LANGUAGE,
     });
 
     const response = await fetch(`${NOMINATIM_URL}/search?${params}`, {
@@ -173,7 +173,7 @@ export const searchAddress = async (query, limit = 5) => {
       label: result.display_name,
       latitude: parseFloat(result.lat),
       longitude: parseFloat(result.lon),
-      city: getCity(result.address),
+      city: resolveCity(result.address),
       postalCode: result.address?.postcode || "",
     }));
   } catch {

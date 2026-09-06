@@ -1,8 +1,9 @@
 import { UserCog, Mail, Phone, Shield, Trash2, ShieldOff, User } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsersThunk, updateUserRoleThunk, deleteUserThunk } from "../../redux/auth/authThunk";
 import toast from "react-hot-toast";
+import ConfirmationDialog from "../../components/ui/ConfirmationDialog";
 
 // Every role the platform supports. "rider" unlocks the rider dashboard and
 // makes the user assignable to deliveries.
@@ -19,6 +20,7 @@ const roleTones = {
 const Users = () => {
   const dispatch = useDispatch();
   const { users, usersLoading, usersError, user: currentUser } = useSelector((state) => state.auth);
+  const [pendingConfirmation, setPendingConfirmation] = useState(null);
 
   useEffect(() => {
     dispatch(getAllUsersThunk());
@@ -34,14 +36,22 @@ const Users = () => {
     const newRole = user.role === "admin" ? "customer" : "admin";
     const actionText = newRole === "admin" ? "promote to Admin" : "remove Admin privileges from";
 
-    if (window.confirm(`Are you sure you want to ${actionText} ${user.name}?`)) {
-      try {
-        const result = await dispatch(updateUserRoleThunk({ userId: user._id, role: newRole })).unwrap();
-        toast.success(result.message || "User role updated successfully.");
-      } catch (err) {
-        toast.error(err || "Failed to update user role.");
-      }
-    }
+    setPendingConfirmation({
+      title: newRole === "admin" ? "Make user an admin?" : "Remove admin access?",
+      description: `Are you sure you want to ${actionText} ${user.name}?`,
+      confirmLabel: newRole === "admin" ? "Make Admin" : "Remove Access",
+      destructive: newRole !== "admin",
+      onConfirm: async () => {
+        try {
+          const result = await dispatch(updateUserRoleThunk({ userId: user._id, role: newRole })).unwrap();
+          toast.success(result.message || "User role updated successfully.");
+        } catch (err) {
+          toast.error(err || "Failed to update user role.");
+        } finally {
+          setPendingConfirmation(null);
+        }
+      },
+    });
   };
 
   const handleRoleChange = async (user, role) => {
@@ -53,16 +63,23 @@ const Users = () => {
       return;
     }
 
-    if (!window.confirm(`Change ${user.name}'s role to ${role}?`)) return;
-
-    try {
-      const result = await dispatch(
-        updateUserRoleThunk({ userId: user._id, role })
-      ).unwrap();
-      toast.success(result.message || "User role updated successfully.");
-    } catch (err) {
-      toast.error(err || "Failed to update user role.");
-    }
+    setPendingConfirmation({
+      title: "Change user role?",
+      description: `Change ${user.name}'s role to ${role}?`,
+      confirmLabel: "Change Role",
+      onConfirm: async () => {
+        try {
+          const result = await dispatch(
+            updateUserRoleThunk({ userId: user._id, role })
+          ).unwrap();
+          toast.success(result.message || "User role updated successfully.");
+        } catch (err) {
+          toast.error(err || "Failed to update user role.");
+        } finally {
+          setPendingConfirmation(null);
+        }
+      },
+    });
   };
 
   const handleDeleteUser = async (user) => {
@@ -72,14 +89,22 @@ const Users = () => {
       return;
     }
 
-    if (window.confirm(`Are you sure you want to permanently delete the user ${user.name}?`)) {
-      try {
-        const result = await dispatch(deleteUserThunk(user._id)).unwrap();
-        toast.success(result.message || "User deleted successfully.");
-      } catch (err) {
-        toast.error(err || "Failed to delete user.");
-      }
-    }
+    setPendingConfirmation({
+      title: "Delete user permanently?",
+      description: `Are you sure you want to permanently delete the user ${user.name}? This action cannot be undone.`,
+      confirmLabel: "Delete User",
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          const result = await dispatch(deleteUserThunk(user._id)).unwrap();
+          toast.success(result.message || "User deleted successfully.");
+        } catch (err) {
+          toast.error(err || "Failed to delete user.");
+        } finally {
+          setPendingConfirmation(null);
+        }
+      },
+    });
   };
 
   return (
@@ -203,6 +228,11 @@ const Users = () => {
           })}
         </div>
       )}
+      <ConfirmationDialog
+        open={Boolean(pendingConfirmation)}
+        onClose={() => setPendingConfirmation(null)}
+        {...pendingConfirmation}
+      />
     </div>
   );
 };
