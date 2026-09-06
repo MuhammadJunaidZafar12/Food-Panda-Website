@@ -38,6 +38,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+import connectDB from "./config/db.js";
+
+// Ensure DB is connected before handling requests (crucial for Vercel serverless)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("Database connection middleware error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed. Please check server logs.",
+    });
+  }
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/restaurants", restaurantRoutes);
