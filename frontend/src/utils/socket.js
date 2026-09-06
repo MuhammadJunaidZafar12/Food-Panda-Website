@@ -9,7 +9,7 @@ import { io } from "socket.io-client";
  */
 
 // Same host as the REST API, without the /api prefix.
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin;
 
 let socket = null;
 
