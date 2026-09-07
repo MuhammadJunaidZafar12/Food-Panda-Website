@@ -13,6 +13,7 @@ import {
   getAllRejectedRestaurantsService,
   getAdminDashboardStatsService,
   getPublicRestaurantByIdService,
+  rateRestaurantService,
 } from "../services/restaurant.service.js";
 import { deleteImageFromCloudinary } from "../utils/cloudinaryHelper.js";
 
@@ -22,7 +23,7 @@ export const getPublicRestaurantById = async (
   next
 ) => {
   try {
-    const restaurant = await getPublicRestaurantByIdService(
+    const { restaurant, userRating } = await getPublicRestaurantByIdService(
       req.params.id,
       req.user
     );
@@ -30,6 +31,7 @@ export const getPublicRestaurantById = async (
     res.status(200).json({
       success: true,
       restaurant,
+      userRating,
     });
   } catch (error) {
     next(error);
@@ -364,3 +366,37 @@ export const getAdminDashboardStats = async (
     next(error);
   }
 };
+
+// Rate a restaurant
+export const rateRestaurant = async (req, res, next) => {
+  try {
+    const { rating } = req.body;
+    const parsedRating = Number(rating);
+
+    if (!parsedRating || parsedRating < 1 || parsedRating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating must be a number between 1 and 5.",
+      });
+    }
+
+    const { restaurant, isUpdate } = await rateRestaurantService(
+      req.params.id,
+      req.user._id,
+      parsedRating
+    );
+
+    res.status(200).json({
+      success: true,
+      message: isUpdate
+        ? "Your rating has been updated successfully."
+        : "Rating submitted successfully.",
+      rating: restaurant.rating,
+      totalReviews: restaurant.totalReviews,
+      userRating: parsedRating,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

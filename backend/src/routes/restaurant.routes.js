@@ -12,6 +12,7 @@ import {
   getAllRejectedRestaurants,
   getAdminDashboardStats,
   getPublicRestaurantById,
+  rateRestaurant,
 } from "../controllers/restaurant.controller.js";
 import {
   protect,
@@ -69,6 +70,7 @@ router.get(
 
 router.get("/", getRestaurants);
 router.get("/public/:id", optionalAuth, getPublicRestaurantById);
+router.post("/:id/rate", protect, rateRestaurant);
 router.get("/my-restaurants", protect, authorizeOwner, getMyRestaurants);
 
 router.get("/:id", protect, getRestaurantById);

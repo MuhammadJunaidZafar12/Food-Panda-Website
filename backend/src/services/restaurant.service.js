@@ -155,7 +155,16 @@ export const getPublicRestaurantByIdService = async (id, user = null) => {
     }
   }
 
-  return restaurant;
+  // Find this user's existing rating (if logged in)
+  let userRating = null;
+  if (user) {
+    const existing = restaurant.ratings.find(
+      (r) => r.user.toString() === user._id.toString()
+    );
+    if (existing) userRating = existing.rating;
+  }
+
+  return { restaurant, userRating };
 };
 
 // **************************************
@@ -412,6 +421,48 @@ export const getAllRejectedRestaurantsService = async () => {
 //     weeklyCreation,
 //   };
 // };
+
+// Rate or update a restaurant rating (upsert per user)
+export const rateRestaurantService = async (restaurantId, userId, rating) => {
+  if (rating < 1 || rating > 5) {
+    throw new Error("Rating must be between 1 and 5.");
+  }
+
+  const restaurant = await Restaurant.findById(restaurantId);
+
+  if (!restaurant) {
+    throw new Error("Restaurant not found.");
+  }
+
+  if (restaurant.status !== "approved" || !restaurant.isActive) {
+    throw new Error("Restaurant not found or not approved.");
+  }
+
+  // Upsert: find existing vote by this user
+  const existingIndex = restaurant.ratings.findIndex(
+    (r) => r.user.toString() === userId.toString()
+  );
+
+  const isUpdate = existingIndex !== -1;
+
+  if (isUpdate) {
+    // Replace the user's old rating
+    restaurant.ratings[existingIndex].rating = rating;
+  } else {
+    // Add a new rating entry
+    restaurant.ratings.push({ user: userId, rating });
+  }
+
+  // Recalculate average from the full ratings array
+  const total = restaurant.ratings.length;
+  const sum = restaurant.ratings.reduce((acc, r) => acc + r.rating, 0);
+  restaurant.rating = Math.round((sum / total) * 10) / 10;
+  restaurant.totalReviews = total;
+
+  await restaurant.save();
+
+  return { restaurant, isUpdate };
+};
 
 export const getAdminDashboardStatsService = async () => {
   const now = new Date();

@@ -70,3 +70,8 @@ export const getAdminDashboardStats = async () => {
 
   return data;
 };
+
+export const rateRestaurant = async (id, rating) => {
+  const { data } = await api.post(`/restaurants/${id}/rate`, { rating });
+  return data;
+};

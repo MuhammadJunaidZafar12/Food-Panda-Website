@@ -12,6 +12,7 @@ import {
   getRejectedRestaurants,
   getAdminDashboardStats,
   getPublicRestaurantById,
+  rateRestaurant,
 } from "../../services/restaurant.service";
 
 export const getRestaurantsThunk = createAsyncThunk(
@@ -168,3 +169,16 @@ export const rejectRestaurantThunk = createAsyncThunk(
       }
     }
   );
+
+export const rateRestaurantThunk = createAsyncThunk(
+  "restaurant/rate",
+  async ({ id, rating }, thunkAPI) => {
+    try {
+      return await rateRestaurant(id, rating);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to submit rating."
+      );
+    }
+  }
+);

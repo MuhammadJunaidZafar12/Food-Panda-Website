@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Clock3, Star, Bike, MapPin } from "lucide-react";
 import { getPublicRestaurantByIdThunk } from "../../redux/restaurant/restaurantThunk";
+import { rateRestaurantThunk } from "../../redux/restaurant/restaurantThunk";
 import { getProductsThunk } from "../../redux/product/productThunk";
 import ProductCard from "../../components/product/ProductCard";
 import useUserLocation from "../../hooks/useUserLocation";
@@ -12,12 +13,135 @@ import {
   haversineDistance,
 } from "../../services/location.service";
 
+/* ─────────────── StarRating Component ─────────────── */
+const StarRating = ({ restaurantId, currentRating, totalReviews, isAuthenticated, initialUserRating }) => {
+  const dispatch = useDispatch();
+  const { ratingLoading, userRating } = useSelector((state) => state.restaurant);
+
+  // Use redux userRating (kept up to date after submissions) or the initial value from page load
+  const myRating = userRating ?? initialUserRating ?? null;
+
+  const [hovered, setHovered] = useState(0);
+  const [toast, setToast] = useState(null); // { type: 'success'|'error', msg }
+
+  const showToast = useCallback((type, msg) => {
+    setToast({ type, msg });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  const handleRate = async (star) => {
+    if (!isAuthenticated) {
+      showToast("error", "Please log in to rate this restaurant.");
+      return;
+    }
+    if (ratingLoading) return;
+
+    const result = await dispatch(rateRestaurantThunk({ id: restaurantId, rating: star }));
+    if (rateRestaurantThunk.fulfilled.match(result)) {
+      const isUpdate = result.payload.message?.includes("updated");
+      showToast(
+        "success",
+        isUpdate
+          ? `Rating updated to ${star} star${star > 1 ? "s" : ""}!`
+          : `You rated this restaurant ${star} star${star > 1 ? "s" : ""}!`
+      );
+    } else {
+      showToast("error", result.payload || "Failed to submit rating.");
+    }
+  };
+
+  const displayRating = currentRating ? Number(currentRating).toFixed(1) : null;
+  // Hover preview > currently-selected star > existing average (rounded)
+  const activeStar = hovered || myRating || Math.round(currentRating || 0);
+
+  return (
+    <div className="flex flex-col items-end gap-1 select-none">
+      {/* Toast notification */}
+      {toast && (
+        <div
+          className={`absolute right-4 top-4 z-50 rounded-xl px-4 py-2 text-sm font-semibold shadow-lg transition-all duration-300 ${
+            toast.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Stars row */}
+      <div
+        className="flex items-center gap-0.5"
+        title={!isAuthenticated ? "Log in to rate this restaurant" : myRating ? "Click to update your rating" : "Rate this restaurant"}
+      >
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            disabled={ratingLoading}
+            onClick={() => handleRate(star)}
+            onMouseEnter={() => setHovered(star)}
+            onMouseLeave={() => setHovered(0)}
+            className={`transition-transform duration-150 ${
+              !isAuthenticated
+                ? "cursor-default"
+                : "cursor-pointer hover:scale-125 active:scale-110"
+            }`}
+            aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+          >
+            <Star
+              size={28}
+              className={`transition-colors duration-150 ${
+                star <= activeStar
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "fill-gray-200 text-gray-300"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+
+      {/* Rating summary */}
+      <div className="flex items-center gap-2 text-sm">
+        {displayRating ? (
+          <>
+            <span className="font-bold text-yellow-600 text-base">{displayRating}</span>
+            <span className="text-gray-400">
+              ({totalReviews} {totalReviews === 1 ? "review" : "reviews"})
+            </span>
+          </>
+        ) : (
+          <span className="font-semibold text-gray-400 italic text-sm">No ratings yet</span>
+        )}
+      </div>
+
+      {/* Submitting spinner */}
+      {ratingLoading && (
+        <span className="text-xs text-pink-500 animate-pulse">Submitting…</span>
+      )}
+
+      {/* Contextual hint */}
+      {!ratingLoading && isAuthenticated && (
+        <span className="text-xs text-gray-400">
+          {hovered
+            ? `Rate ${hovered} star${hovered > 1 ? "s" : ""}`
+            : myRating
+            ? `Your rating: ${myRating}★ — click to change`
+            : "Click to rate"}
+        </span>
+      )}
+    </div>
+  );
+};
+/* ───────────────────────────────────────────────────── */
+
 const RestaurantDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { currentRestaurant, loading: restaurantLoading, error: restaurantError } = useSelector((state) => state.restaurant);
+  const { currentRestaurant, loading: restaurantLoading, error: restaurantError, userRating } = useSelector((state) => state.restaurant);
   const { products, loading: productsLoading, error: productsError } = useSelector((state) => state.product);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { latitude, longitude } = useUserLocation();
   const [routeDuration, setRouteDuration] = useState(null);
 
@@ -147,11 +271,16 @@ const RestaurantDetails = () => {
                   {currentRestaurant.category}
                 </p>
               </div>
-              <div className="flex items-center gap-2 rounded-xl bg-yellow-50 px-4 py-2">
-                <Star size={24} className="fill-yellow-400 text-yellow-400" />
-                <span className="text-xl font-bold text-yellow-700">
-                  {currentRestaurant.rating || "New"}
-                </span>
+
+              {/* ── Interactive Star Rating ── */}
+              <div className="relative">
+                <StarRating
+                  restaurantId={id}
+                  currentRating={currentRestaurant.rating}
+                  totalReviews={currentRestaurant.totalReviews || 0}
+                  isAuthenticated={isAuthenticated}
+                  initialUserRating={userRating}
+                />
               </div>
             </div>
 
@@ -210,3 +339,4 @@ const RestaurantDetails = () => {
 };
 
 export default RestaurantDetails;
+

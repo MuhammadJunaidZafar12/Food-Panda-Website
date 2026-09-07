@@ -109,6 +109,25 @@ const restaurantSchema = new mongoose.Schema(
       default: 0,
     },
 
+    ratings: {
+      type: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+          },
+          rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5,
+          },
+        },
+      ],
+      default: [],
+    },
+
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

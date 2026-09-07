@@ -12,6 +12,7 @@ import {
     rejectRestaurantThunk,
     getAdminDashboardStatsThunk,
     getPublicRestaurantByIdThunk,
+    rateRestaurantThunk,
 } from "./restaurantThunk";
 
 const initialState = {
@@ -34,9 +35,12 @@ const initialState = {
         userGraph: [],
     },
     currentRestaurant: null,
+    userRating: null,
     loading: false,
     error: null,
     success: false,
+    ratingLoading: false,
+    ratingError: null,
 };
 
 const restaurantSlice = createSlice({
@@ -144,6 +148,7 @@ const restaurantSlice = createSlice({
                     state.success = false;
                     state.error = null;
                     state.currentRestaurant = null;
+                    state.userRating = null;
                 }
             )
             .addCase(
@@ -152,6 +157,7 @@ const restaurantSlice = createSlice({
                     state.loading = false;
                     state.currentRestaurant =
                         action.payload.restaurant;
+                    state.userRating = action.payload.userRating ?? null;
                 }
             )
             .addCase(
@@ -160,6 +166,7 @@ const restaurantSlice = createSlice({
                     state.loading = false;
                     state.error = action.payload;
                     state.currentRestaurant = null;
+                    state.userRating = null;
                 }
             )
             .addCase(
@@ -337,6 +344,23 @@ const restaurantSlice = createSlice({
                         "Failed to load dashboard";
                 }
             )
+            .addCase(rateRestaurantThunk.pending, (state) => {
+                state.ratingLoading = true;
+                state.ratingError = null;
+            })
+            .addCase(rateRestaurantThunk.fulfilled, (state, action) => {
+                state.ratingLoading = false;
+                if (state.currentRestaurant) {
+                    state.currentRestaurant.rating = action.payload.rating;
+                    state.currentRestaurant.totalReviews = action.payload.totalReviews;
+                }
+                // Update the stored user rating to their new value
+                state.userRating = action.payload.userRating;
+            })
+            .addCase(rateRestaurantThunk.rejected, (state, action) => {
+                state.ratingLoading = false;
+                state.ratingError = action.payload;
+            })
     },
 });
 
