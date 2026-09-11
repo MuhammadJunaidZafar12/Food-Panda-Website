@@ -141,7 +141,7 @@ const RestaurantDetails = () => {
 
   const { currentRestaurant, loading: restaurantLoading, error: restaurantError, userRating } = useSelector((state) => state.restaurant);
   const { products, loading: productsLoading, error: productsError } = useSelector((state) => state.product);
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const { latitude, longitude } = useUserLocation();
   const [routeDuration, setRouteDuration] = useState(null);
 

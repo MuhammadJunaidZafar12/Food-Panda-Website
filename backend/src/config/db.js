@@ -47,10 +47,10 @@ const connectDB = async () => {
           try {
             dns.setServers(publicDnsServers);
             const fallbackInstance = await mongoose.connect(mongoUri, opts);
-            console.log("✅ Connected to MongoDB Atlas successfully (DNS fallback)!");
+            console.log("Connected to MongoDB Atlas successfully (DNS fallback)!");
             return fallbackInstance;
           } catch (fallbackError) {
-            console.error("❌ MongoDB DNS fallback failed:", fallbackError.message);
+            console.error("MongoDB DNS fallback failed:", fallbackError.message);
             throw fallbackError;
           }
         }
